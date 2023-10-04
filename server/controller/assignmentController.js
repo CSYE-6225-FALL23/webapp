@@ -95,10 +95,10 @@ const updateAssignment = async (req, res) => {
 
     const assignment = Object.keys(req.body).reduce(
       (result, key) =>
-        req.body[key] !== null ? { ...result, [key]: req.body[key] } : result,
+        req.body[key] !== null && ["name", "points", "num_of_attempts", "deadline"].includes(key) ? { ...result, [key]: req.body[key] } : result,
       {},
     );
-    if (!assignment) throw new GeneralErrorHandler("GEN_102");
+    if (Object.keys(assignment).length == 0) throw new GeneralErrorHandler("GEN_102");
 
     await assignmentClient.updateAssignment(
       assignment,
