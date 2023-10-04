@@ -14,7 +14,6 @@ A healthz API to check Postgres database health status
   - [Development](#development)
   - [Testing](#testing)
   - [Deployment](#deployment)
-  - [Documentation](#documentation)
   - [License](#license)
 
 ## Prerequisites
@@ -31,8 +30,8 @@ To get started with Node.js healthz API, follow these steps:
 
 ```bash
 # Clone the repository
-git clone https://github.com/CSYE-6225-FALL23/csye_6225.git
-cd csye_6225
+git clone https://github.com/CSYE-6225-FALL23/webapp.git
+cd webapp
 
 # Install DB dependencies
 cd .\database
@@ -55,6 +54,7 @@ POSTGRES_DB='postgres'
 POSTGRES_USER='postgres'
 POSTGRES_PASSWORD='postgres'
 POSTGRES_URI='localhost'
+FILEPATH='../deployment/user.csv'
 ```
 
 ## Usage
@@ -67,5 +67,44 @@ To run tests, use the following command inside a package:
 ```bash
 npm test
 ```
+## Deployment
+- Installing prerequisites (latest versions) to deploy on Debian 12 EC2 instance
+  ```
+  sudo apt-get update
+  sudo apt-get install postgresql nodejs npm -y
+  ```
+
+- Start postgres and change the password
+  ```
+  sudo service postgresql start
+  sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+  ```
+
+- Change folder permissions required for next step
+  ```
+  sudo chmod 747 /opt
+  ```
+
+- After installing, copy the application files and user.csv onto the machine
+  - application - /home/admin/webapp
+  - user.csv - /opt/user.csv
+
+- Install dependencies
+  ```
+  cd /home/admin/webapp/
+  cd ./database; npm i
+  cd ../server; npm i
+  ```
+
+- Change the 'FILEPATH' variable in .env to point to /opt/user.csv
+  ```
+  FILEPATH='../deployment/user.csv'
+  ```
+
+- Start the server
+  ```
+  cd ./server
+  npm start
+  ```
 ## License
 This project is licensed under the MIT License. See the [LICENSE](.\LICENSE) file for details.
