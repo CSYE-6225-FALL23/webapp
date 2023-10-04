@@ -100,12 +100,12 @@ const updateAssignment = async (req, res) => {
     );
     if (!assignment) throw new GeneralErrorHandler("GEN_102");
 
-    const updatedAssignment = await assignmentClient.updateAssignment(
+    await assignmentClient.updateAssignment(
       assignment,
       assignmentId,
       req.user.id,
     );
-    res.status(200).send(updatedAssignment);
+    res.status(204).send();
   } catch (error) {
     console.error("Error updating assignment:", error);
     if (!error.statusCode) error.statusCode = 500;
