@@ -22,8 +22,9 @@ jobs:
           echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo POSTGRES_URI=${{ secrets.POSTGRES_URI }} >> .env
-          cat .env
-
+          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          echo POSTGRES_URI=${{ secrets.POSTGRES_URI }}
+          
       - name: Install and run PostgreSQL
         run: |
           sudo apt-get update
