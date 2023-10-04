@@ -46,4 +46,4 @@ jobs:
       - name: Run Integration Tests
         run: |
           pwd
-          cd ./database && npm run test
+          cd ./server && npm run test
