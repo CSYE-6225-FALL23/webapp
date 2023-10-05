@@ -75,6 +75,7 @@ const getAssignment = async (req, res) => {
 const getAllAssignment = async (req, res) => {
   try {
     if (req.headers["content-type"]) throw new GeneralErrorHandler("GEN_102");
+    if (Object.keys(req.query).length > 0) throw new GeneralErrorHandler("GEN_101");
 
     const assignments = await assignmentClient.getAllAssignment();
     assignments.forEach((assignment) => {
@@ -93,15 +94,8 @@ const updateAssignment = async (req, res) => {
     const assignmentId = req.params.id;
     if (!assignmentId) throw new AssignmentErrorHandler("ASSGN_103");
 
-    const assignment = Object.keys(req.body).reduce(
-      (result, key) =>
-        req.body[key] !== null && ["name", "points", "num_of_attempts", "deadline"].includes(key) ? { ...result, [key]: req.body[key] } : result,
-      {},
-    );
-    if (Object.keys(assignment).length == 0) throw new GeneralErrorHandler("GEN_102");
-
     await assignmentClient.updateAssignment(
-      assignment,
+      req.body.assignmentBody,
       assignmentId,
       req.user.id,
     );
