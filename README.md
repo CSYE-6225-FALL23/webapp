@@ -18,7 +18,7 @@ A healthz API to check Postgres database health status
 
 ## Prerequisites
 
-- Node.js 18.x or higher
+- Node.js 18.x or higher test
 - Docker 20.x or higher
 - Git
 
