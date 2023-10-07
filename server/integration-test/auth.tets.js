@@ -14,7 +14,7 @@ describe("Integration testing", () => {
   });
 
   it("should connect to DB", (done) => {
-    request(app).get("/healthz").expect(200, done);
+    request(app).get("/health").expect(200, done);
   });
 
   it("Get auth token", (done) => {
