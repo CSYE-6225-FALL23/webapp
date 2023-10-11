@@ -22,10 +22,12 @@ const createAssignment = async (req, res) => {
     const { name, points, num_of_attempts, deadline } = req.body;
     if (!name || !points || !num_of_attempts || !deadline)
       throw new GeneralErrorHandler("GEN_102");
-    if (points > 10 || points < 1)
-      throw new AssignmentErrorHandler("ASSGN_102");
+    if (points > 10 || points < 1 || points % 1 != 0)
+      throw new AssignmentErrorHandler("ASSGN_104");
     if (deadline <= new Date().toISOString())
       throw new AssignmentErrorHandler("ASSGN_102");
+    if (num_of_attempts % 1 != 0)
+      throw new AssignmentErrorHandler("ASSGN_105");
 
     const payload = {
       name: name,

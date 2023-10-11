@@ -11,7 +11,7 @@ describe("Integration testing", () => {
   it("should connect to DB", (done) => {
     chai
     .request(app)
-    .get("/health")
+    .get("/healthz")
     .end((error, res) => {
       if (error) done(err);
       chai.expect(res.statusCode).to.equal(200);
