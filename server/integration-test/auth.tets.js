@@ -1,8 +1,6 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http"); 
 
-const Connection = require("database").Connection;
-
 const app = require("../index");
 
 chai.use(chaiHttp);
