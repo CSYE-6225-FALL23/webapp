@@ -1,9 +1,11 @@
 const chai = require("chai");
-const request = require("supertest");
+const chaiHttp = require("chai-http"); 
 
 const Connection = require("database").Connection;
 
 const app = require("../index");
+
+chai.use(chaiHttp);
 
 describe("Integration testing", () => {
   before("Initalize application", function (done) {
@@ -14,8 +16,13 @@ describe("Integration testing", () => {
   });
 
   it("should connect to DB", (done) => {
-    request(app).get("/health", (error, res, body) => {
+    chai
+    .request(app)
+    .get("/healthz")
+    .end((error, res) => {
+      if (error) done(err);
       chai.expect(res.statusCode).to.equal(200);
+      done();
     })
   });
 
