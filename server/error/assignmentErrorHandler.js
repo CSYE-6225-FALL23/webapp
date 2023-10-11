@@ -20,6 +20,20 @@ const assignmentError = {
     description: "Expected a valid id",
     timestamp: new Date().toISOString(),
   },
+  ASSGN_104: {
+    statusCode: 400,
+    code: "ASSGN_104",
+    msg: "Invalid body",
+    description: "Expected valid value for points",
+    timestamp: new Date().toISOString(),
+  },
+  ASSGN_105: {
+    statusCode: 400,
+    code: "ASSGN_105",
+    msg: "Invalid body",
+    description: "Expected valid value for number of attempts",
+    timestamp: new Date().toISOString(),
+  },
 };
 
 class AssignmentErrorHandler extends Error {
