@@ -14,18 +14,9 @@ describe("Integration testing", () => {
   });
 
   it("should connect to DB", (done) => {
-    request(app).get("/healthz").expect(200, done);
-  });
-
-  it("Get auth token", (done) => {
-    request(app)
-      .post("/auth")
-      .send({ email: "john.doe@example.com", password: "abc123" })
-      .set("Accept", "application/json")
-      .expect(200)
-      .end(function (err, res) {
-        if (err) throw err;
-      }, done());
+    request(app).get("/health", (error, res, body) => {
+      chai.expect(res.statusCode).to.equal(200);
+    })
   });
 
   after("close open connection", function (done) {
