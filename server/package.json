@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon index.js",
     "format": "prettier --write \"**/*.js\"",
-    "test": "mocha integration-test"
+    "test": "mocha integration-test --exit"
   },
   "author": "Sudarshan Kudli",
   "license": "ISC",
