@@ -25,18 +25,6 @@ const getDBHealthStatus = async (req, res) => {
   }
 };
 
-const closeDBConnection = async (req, res) => {
-  try {
-    const isDBClosed = await Connection.closeConnection();
-    if (!isDBClosed) throw new Error("Database not closed");
-    console.log("Closed DB connection.");
-    res.status(200).send();
-  } catch (error) {
-    console.error("Unable to close connection:", error);
-    res.status(503).send();
-  }
-};
-
 module.exports = {
   getDBHealthStatus,
 };

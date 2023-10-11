@@ -2,7 +2,6 @@ const express = require("express");
 
 // Import Custom Files
 const { getDBHealthStatus } = require("../controller/dbController.js");
-const { getAuthToken } = require("../controller/authController.js");
 const { setNoCachePolicy } = require("../middleware/cacheControl.js");
 
 const route = express.Router();
@@ -14,7 +13,5 @@ route.get("/test", (req, res, next) => {
 
 // Get Health Status
 route.get("/healthz", setNoCachePolicy, getDBHealthStatus);
-
-route.post("/auth", getAuthToken);
 
 module.exports = route;
