@@ -24,7 +24,7 @@ A healthz API to check Postgres database health status
 
 ## Getting Started
 
-To get started with Node.js healthz API, follow these steps:
+To get started with Node.js healthz API, follow these steps on bash:
 
 ### Installation
 
@@ -34,21 +34,21 @@ git clone https://github.com/CSYE-6225-FALL23/webapp.git
 cd webapp
 
 # Install DB dependencies
-cd .\database
+cd ./database
 npm install
 
 # Install server dependencies
-cd .\server
+cd ./server
 npm install
 ```
 
 ### Configuration
-Create a .env file in .\server and configure the following environment variables:
+Create a .env file in ./server and configure the following environment variables:
 ```env
 SERVER_PORT=8000
 ```
 
-Create a .env file in .\server and .\database and configure the following environment variables:
+Create a .env file in ./server and ./database and configure the following environment variables:
 ```env
 POSTGRES_DB='postgres'
 POSTGRES_USER='postgres'
@@ -58,8 +58,10 @@ FILEPATH='../deployment/user.csv'
 ```
 
 ## Usage
-- Start the development server using a scipt: 
-  - .\deployment\start.bat
+- Start the development server using the command in ./server dir: 
+  ```bash
+  npm start
+  ```
 - Access the API at http://localhost:8000
 
 ## Testing
@@ -78,6 +80,7 @@ npm test
   ```
   sudo service postgresql start
   sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+  sudo -u postgres psql -c "CREATE DATABASE csye6225;"
   ```
 
 - Change folder permissions required for next step
