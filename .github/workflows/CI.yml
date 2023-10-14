@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  db_health_check:
     name: db_health_check
     runs-on: ubuntu-latest
 
