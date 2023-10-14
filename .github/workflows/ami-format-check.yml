@@ -24,7 +24,8 @@ jobs:
       - name: Packer Format
         run: |
           pwd
-          if ! find deployment/ami -name '*.hcl' -exec packer fmt -check .; then
+          cd deployment/ami
+          if ! find . -name '*.hcl' -exec packer fmt -check .; then
             echo "Packer formatting check failed. Run 'packer fmt' to fix the formatting issues."
             exit 1
           else
