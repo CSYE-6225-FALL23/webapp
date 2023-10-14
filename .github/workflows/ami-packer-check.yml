@@ -1,0 +1,31 @@
+name: Packer Format and Validate
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  packer_format_validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Packer
+        run: |
+          wget https://releases.hashicorp.com/packer/1.7.4/packer_1.7.4_linux_amd64.zip
+          unzip packer_1.9.4_linux_amd64.zip
+          sudo mv packer /usr/local/bin/
+        shell: bash
+
+      - name: Packer Format
+        run: |
+          find . -name './deployment/ami/*.hcl' -exec packer fmt . \;
+        shell: bash
+
+      - name: Packer Validate
+        run: |
+          find . -name './deployment/ami/*.hcl' -exec packer validate . \;
+        shell: bash
