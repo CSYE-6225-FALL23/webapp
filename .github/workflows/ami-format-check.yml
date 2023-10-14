@@ -23,7 +23,7 @@ jobs:
 
       - name: Packer Format
         run: |
-          if find . -name './deployment/ami/*.hcl' -exec packer fmt --check . \; | grep -q "WARN"; then
+          if find deployment/ami -name '*.hcl' -exec packer fmt -check . \; | grep -q "WARN"; then
             echo "Packer formatting check failed. Run 'packer fmt' to fix the formatting issues."
             exit 1
           fi
@@ -31,5 +31,5 @@ jobs:
 
       - name: Packer Validate
         run: |
-          find . -name './deployment/ami/*.hcl' -exec packer validate . \;
+          find deployment/ami/ -name '*.hcl' -exec packer validate . \;
         shell: bash
