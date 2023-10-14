@@ -23,7 +23,7 @@ jobs:
 
       - name: Packer Format
         run: |
-          find . -name './deployment/ami/*.hcl' -exec packer fmt . \;
+          find . -name './deployment/ami/*.hcl' -exec packer fmt -check . \;
         shell: bash
 
       - name: Packer Validate
