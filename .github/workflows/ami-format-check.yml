@@ -23,14 +23,13 @@ jobs:
 
       - name: Packer Format
         run: |
-          pwd
           cd deployment/ami
+          pwd
           if ! packer fmt -check .; then
             echo "Packer formatting check failed. Run 'packer fmt' to fix the formatting issues."
             exit 1
           else
-            $?
-            echo "command failed"
+            echo "No changes made"
           fi
         shell: bash
 
