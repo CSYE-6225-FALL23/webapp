@@ -47,7 +47,7 @@ source "amazon-ebs" "webapp-ami" {
   }
 
   instance_type = "t2.micro"
-  source_ami    = "${var.source_amii}"
+  source_ami    = "${var.source_ami}"
   ssh_username  = "${var.ssh_username}"
   ami_users     = ["099720109477"]
 
