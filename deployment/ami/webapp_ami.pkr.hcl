@@ -47,7 +47,7 @@ source "amazon-ebs" "webapp-ami" {
   }
 
   instance_type = "t2.micro"
-  source_ami    = "${var.source_ami}"
+  source_ami    = "${var.source_amii}"
   ssh_username  = "${var.ssh_username}"
   ami_users     = ["099720109477"]
 
@@ -69,7 +69,7 @@ build {
   ]
   provisioner "shell" {
     inline = [
-      "sudo apt-get update"
+      "sudo apt-get update",
       "sudo apt-get upgrade",
     ]
   }
