@@ -29,11 +29,19 @@ jobs:
             echo "Packer formatting check failed. Run 'packer fmt' to fix the formatting issues."
             exit 1
           else
-            echo "No changes made"
+            echo "Packer format check passed"
           fi
         shell: bash
 
       - name: Packer Validate
         run: |
-          find deployment/ami/ -name '*.hcl' -exec packer validate . \;
+          cd deployment/ami
+          pwd
+          packer init ./
+          if ! packer validate .; then
+            echo "Packer validation check failed."
+            exit 1
+          else
+            echo "Packer validation check passed"
+          fi
         shell: bash
