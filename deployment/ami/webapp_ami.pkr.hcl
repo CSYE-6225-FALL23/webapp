@@ -78,7 +78,7 @@ build {
     script = "./ami_init.sh"
   }
   provisioner "file" {
-    source      = "../../../webapp.zip"
+    source      = "../../webapp.zip"
     destination = "/home/admin/webapp.zip"
   }
 }
