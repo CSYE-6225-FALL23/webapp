@@ -1,0 +1,58 @@
+name: Packer Format and Validate
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_ami:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create .env file
+        run: |
+          cd ./server
+          touch .env
+          echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
+          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          echo POSTGRES_URI=${{ secrets.POSTGRES_URI }} >> .env
+          echo FILEPATH=${{ secrets.FILEPATH }} >> .env
+
+      # - name: Install and run PostgreSQL
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install postgresql
+      #     sudo service postgresql start
+
+      # - name: DB and User setup
+      #   run: |
+      #     sudo -u postgres psql -c "CREATE DATABASE csye6225 OWNER postgres;"
+      #     sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+
+      # - name: Install Dependencies
+      #   run: |
+      #     cd ./database && npm install
+      #     cd ../server && npm install
+
+      # - name: Run Integration Tests
+      #   run: |
+      #     cd ./server && npm run test
+
+      - name: Zip Folder
+        run: zip -r webapp.zip .
+
+      - name: Install Packer
+        run: |
+          wget https://releases.hashicorp.com/packer/1.7.4/packer_1.7.4_linux_amd64.zip
+          unzip packer_1.7.4_linux_amd64.zip
+          sudo mv packer /usr/local/bin/
+        shell: bash
+
+      - name: Build AMI
+        run: |
+          cd deployment/ami
+          packer build -var "aws_access_key:AKIATV62B2TCK4ALTL4H" -var "aws_secret_access_key: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" .
