@@ -55,4 +55,4 @@ jobs:
       - name: Build AMI
         run: |
           cd deployment/ami
-          packer build -var "aws_access_key:AKIATV62B2TCK4ALTL4H" -var "aws_secret_access_key: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" .
+          packer build -var "aws_access_key=AKIATV62B2TCK4ALTL4H" -var "aws_secret_access_key=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" .
