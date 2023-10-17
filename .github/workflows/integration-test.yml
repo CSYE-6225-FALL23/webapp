@@ -36,7 +36,7 @@ jobs:
 
       - name: Change password
         run: |
-          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD ${{ secrets.POSTGRES_PASSWORD }};"
 
       - name: Install Dependencies
         run: |
