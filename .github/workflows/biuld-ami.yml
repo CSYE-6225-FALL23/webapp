@@ -37,4 +37,9 @@ jobs:
         run: |
           cd deployment/ami
           packer init ./
-          packer build -var "aws_access_key=AKIATV62B2TCK4ALTL4H" -var "aws_secret_access_key=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" .
+          packer build \
+            -var "aws_access_key=${{ secreta.AWS_ACCESS_KEY }}" \
+            -var "aws_secret_access_key=${{ AWS_SECRET_ACCESS_KEY }}" \
+            -var "source_ami=${{ vars.SOURCE_AMI }}" \
+            -var "ami_region=${{ vars.AMI_REGION }}" \
+            -var "zip_file_path=${{ vars.APP_ZIP_PATH }}" .
