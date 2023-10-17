@@ -14,6 +14,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Zip Folder
+        run: zip -r webapp.zip .
+
       - name: Install Packer
         run: |
           wget https://releases.hashicorp.com/packer/1.7.4/packer_1.7.4_linux_amd64.zip
@@ -38,7 +41,7 @@ jobs:
           cd deployment/ami
           pwd
           packer init ./
-          if ! packer validate .; then
+          if ! packer validate -var "zip_file_path=../../webapp.zip" .; then
             echo "Packer validation check failed."
             exit 1
           else

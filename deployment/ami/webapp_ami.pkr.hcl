@@ -9,10 +9,12 @@ packer {
 
 variable "aws_access_key" {
   type    = string
+  default = ""
 }
 
 variable "aws_secret_access_key" {
   type    = string
+  default = ""
 }
 
 variable "ami_region" {
@@ -38,6 +40,11 @@ variable "ssh_username" {
 variable "subnet_id" {
   type    = string
   default = "subnet-0fe40f73f2d843daa"
+}
+
+variable "zip_file_path" {
+  type    = string
+  default = "../../webapp.zip"
 }
 
 source "amazon-ebs" "webapp-ami" {
@@ -78,7 +85,7 @@ build {
     script = "./ami_init.sh"
   }
   provisioner "file" {
-    source      = "../../webapp.zip"
+    source      = var.zip_file_path
     destination = "/home/admin/webapp.zip"
   }
 }
