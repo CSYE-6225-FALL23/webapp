@@ -32,11 +32,11 @@ jobs:
 
       - name: Create PostgreSQL Database
         run: |
-          sudo -u postgres createdb ${{ secrets.POSTGRES_DB }}
+          sudo -u postgres psql -c "CREATE DATABASE $ {{ secrets.POSTGRES_DB }} OWNER postgres;"
 
       - name: Change password
         run: |
-          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
+          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
 
       - name: Install Dependencies
         run: |
