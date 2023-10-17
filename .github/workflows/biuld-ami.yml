@@ -39,7 +39,7 @@ jobs:
           packer init ./
           packer build \
             -var "aws_access_key=${{ secrets.AWS_ACCESS_KEY }}" \
-            -var "aws_secret_access_key=${{ AWS_SECRET_ACCESS_KEY }}" \
+            -var "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             -var "source_ami=${{ vars.SOURCE_AMI }}" \
             -var "ami_region=${{ vars.AMI_REGION }}" \
             -var "zip_file_path=${{ vars.APP_ZIP_PATH }}" .
