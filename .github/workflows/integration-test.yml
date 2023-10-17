@@ -32,7 +32,7 @@ jobs:
 
       - name: Create PostgreSQL Database
         run: |
-          sudo -u postgres psql -c "CREATE DATABASE $ {{ secrets.POSTGRES_DB }} OWNER postgres;"
+          sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} OWNER postgres;"
 
       - name: Change password
         run: |
