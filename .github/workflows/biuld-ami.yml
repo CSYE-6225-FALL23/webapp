@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Check if this push is from a PR merge
         run: |
-          if [[ ${{ github.event_name }} == 'push' && ${{ contains(github.event.head_commit.message, 'Merge pull request') }} ]]; then
+          if [[ ${{ github.event_name }} == 'push' && ${{ contains(github.event.head_commit.message, 'Merge pull request') }} && github.repository_fork == 'false' ]]; then
             echo "This push is from a pull request merge."
           else
             echo "This push is not from a pull request merge."
