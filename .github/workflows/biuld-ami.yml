@@ -1,23 +1,31 @@
 name: Build AMI using Packer
 
 on:
-  pull_request:
-    type:
-      - closed
+  push:
     branches:
       - main
 
 jobs:
   db_health_check:
-    if: github.event.pull_request.merged == true
     name: db_health_check
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check if this push is from a PR merge
+        run: |
+          if [[ ${{ github.event_name }} == 'push' && ${{ contains(github.event.head_commit.message, 'Merge pull request') }} ]]; then
+            echo "This push is from a pull request merge."
+          else
+            echo "This push is not from a pull request merge."
+            exit 1
+          fi
+
       - name: Checkout code
+        if: success()
         uses: actions/checkout@v2
 
       - name: create env file
+        if: success()
         run: |
           cd ./server
           touch .env
@@ -28,34 +36,47 @@ jobs:
           echo FILEPATH=${{ secrets.FILEPATH }} >> .env
 
       - name: Install and run PostgreSQL
+        if: success()
         run: |
           sudo apt-get update
           sudo apt-get install postgresql
           sudo service postgresql start
 
       - name: Create PostgreSQL Database
+        if: success()
         run: |
           sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} OWNER ${{ secrets.POSTGRES_USER }};"
           sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD ${{ secrets.POSTGRES_PASSWORD }};"
 
       - name: Install Dependencies
+        if: success()
         run: |
           cd ./database && npm install
           cd ../server && npm install
 
       - name: Run Integration Tests
+        if: success()
         run: |
-          pwd
           cd ./server && npm run test
 
   build_ami:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
+      - name: Check if this push is from a PR merge
+        run: |
+          if [[ ${{ github.event_name }} == 'push' && ${{ contains(github.event.head_commit.message, 'Merge pull request') }} ]]; then
+            echo "This push is from a pull request merge."
+          else
+            echo "This push is not from a pull request merge."
+            exit 1
+          fi
+
       - name: Checkout code
+        if: success()
         uses: actions/checkout@v2
 
       - name: Create .env file
+        if: success()
         run: |
           cd ./server
           touch .env
@@ -67,9 +88,11 @@ jobs:
           echo FILEPATH=${{ vars.FILEPATH }} >> .env
 
       - name: Zip Folder
+        if: success()
         run: zip -r webapp.zip .
 
       - name: Install Packer
+        if: success()
         run: |
           wget https://releases.hashicorp.com/packer/1.7.4/packer_1.7.4_linux_amd64.zip
           unzip packer_1.7.4_linux_amd64.zip
@@ -77,6 +100,7 @@ jobs:
         shell: bash
 
       - name: Build AMI
+        if: success()
         run: |
           cd deployment/ami
           packer init ./
