@@ -4,6 +4,9 @@
 sudo apt update
 sudo apt upgrade -y
 
+# Access to copy user.csv
+sudo chmod 747 /opt
+
 # Install PostgreSQL
 sudo apt install unzip postgresql postgresql-contrib -y
 

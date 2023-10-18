@@ -26,8 +26,7 @@ const createAssignment = async (req, res) => {
       throw new AssignmentErrorHandler("ASSGN_104");
     if (deadline <= new Date().toISOString())
       throw new AssignmentErrorHandler("ASSGN_102");
-    if (num_of_attempts % 1 != 0)
-      throw new AssignmentErrorHandler("ASSGN_105");
+    if (num_of_attempts % 1 != 0) throw new AssignmentErrorHandler("ASSGN_105");
 
     const payload = {
       name: name,
@@ -77,7 +76,8 @@ const getAssignment = async (req, res) => {
 const getAllAssignment = async (req, res) => {
   try {
     if (req.headers["content-type"]) throw new GeneralErrorHandler("GEN_102");
-    if (Object.keys(req.query).length > 0) throw new GeneralErrorHandler("GEN_101");
+    if (Object.keys(req.query).length > 0)
+      throw new GeneralErrorHandler("GEN_101");
 
     const assignments = await assignmentClient.getAllAssignment();
     assignments.forEach((assignment) => {

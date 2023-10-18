@@ -24,11 +24,9 @@ const app = express();
 app.use((req, res, next) => {
   const contentType = req.headers["content-type"];
   if (contentType && !contentType.includes("application/json"))
-    res
-      .status(400)
-      .json({
-        error: "Invalid Content-Type. Only application/json is allowed.",
-      });
+    res.status(400).json({
+      error: "Invalid Content-Type. Only application/json is allowed.",
+    });
   else bodyParser.json({ extended: true })(req, res, next);
 });
 app.use(bodyParser.urlencoded({ extended: true }));
