@@ -4,6 +4,9 @@
 sudo apt update
 sudo apt upgrade -y
 
+sudo apt-get -y remove git
+sudo apt-get -y autoremove
+
 # Access to copy user.csv
 sudo chmod 747 /opt
 
