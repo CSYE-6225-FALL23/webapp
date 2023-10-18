@@ -1,4 +1,4 @@
-name: CI
+name: Integration Test
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  db_health_check:
     name: db_health_check
     runs-on: ubuntu-latest
 
@@ -32,17 +32,16 @@ jobs:
 
       - name: Create PostgreSQL Database
         run: |
-          sudo -u postgres createdb csye6225
+          sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} OWNER ${{ secrets.POSTGRES_USER }};"
 
       - name: Change password
         run: |
-          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD ${{ secrets.POSTGRES_PASSWORD }};"
 
       - name: Install Dependencies
         run: |
           cd ./database && npm install
           cd ../server && npm install
-        # Add more steps here for your project's setup
 
       - name: Run Integration Tests
         run: |
