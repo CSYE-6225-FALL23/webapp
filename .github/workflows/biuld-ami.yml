@@ -115,4 +115,5 @@ jobs:
             -var "subnet_id=${{ vars.SUBNET_ID }}" \
             -var "instanceType=${{ vars.INSTANCE_TYPE }}" \
             -var "ebsVolumeSize=${{ vars.EBS_VOLUME_SIZE }}" \
-            -var "ebsVolumeType=${{ vars.EBS_VOLUME_TYPE }}" .
+            -var "ebsVolumeType=${{ vars.EBS_VOLUME_TYPE }}" \
+            -var "webappDestinationFolder=${{ vars.WEBAPP_DESTINATION_PATH }}" .
