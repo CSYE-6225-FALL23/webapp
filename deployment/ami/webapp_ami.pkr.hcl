@@ -47,6 +47,41 @@ variable "zip_file_path" {
   default = "../../webapp.zip"
 }
 
+variable "instanceType" {
+  type    = string
+  default = "t2.micro"
+}
+
+variable "ami_users" {
+  type    = list
+  default = ["273429938290"]
+}
+
+variable "ami_regions" {
+  type    = list
+  default = ["us-east-1"]
+}
+
+variable "ebsVolumeSize" {
+  type    = number
+  default = 25
+}
+
+variable "ebsVolebsVolumeTypeumeSize" {
+  type    = string
+  default = "gp2"
+}
+
+variable "startupScript" {
+  type    = string
+  default = "./ami_init.sh"
+}
+
+variable "webappDestinationFolder" {
+  type    = string
+  default = "/home/admin/webapp.zip"
+}
+
 source "amazon-ebs" "webapp-ami" {
   access_key = var.aws_access_key
   secret_key = var.aws_secret_access_key
@@ -54,26 +89,23 @@ source "amazon-ebs" "webapp-ami" {
   region          = var.ami_region
   ami_name        = "${var.ami_prefix}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "CSYE 6225 Webapp AMI"
-
-  ami_regions = [
-    "us-east-1",
-  ]
+  ami_regions = var.ami_regions
 
   aws_polling {
     delay_seconds = 120
     max_attempts  = 50
   }
 
-  instance_type = "t2.micro"
+  instance_type = var.instanceType
   source_ami    = var.source_ami
   ssh_username  = var.ssh_username
-  ami_users     = ["273429938290"]
+  ami_users     = var.ami_users
 
   launch_block_device_mappings {
     delete_on_termination = true
     device_name           = "/dev/xvda"
-    volume_size           = 8
-    volume_type           = "gp2"
+    volume_size           = var.ebsVolumeSize
+    volume_type           = var.ebsVolumeType
   }
 }
 
@@ -82,10 +114,10 @@ build {
     "source.amazon-ebs.webapp-ami"
   ]
   provisioner "shell" {
-    script = "./ami_init.sh"
+    script = var.startupScript
   }
   provisioner "file" {
     source      = var.zip_file_path
-    destination = "/home/admin/webapp.zip"
+    destination = var.webappDestinationFolder
   }
 }
