@@ -84,7 +84,12 @@ variable "webappDestinationFolder" {
 
 variable "postgresDB" {
   type    = string
-  default = "csye6225"
+  default = ""
+}
+
+variable "postgresPassword" {
+  type    = string
+  default = ""
 }
 
 source "amazon-ebs" "webapp-ami" {
@@ -121,6 +126,7 @@ build {
   provisioner "shell" {
     environment_vars = [
       "POSTGRES_DB=${var.postgresDB}",
+      "POSTGRES_PASSWORD=${var.postgresPassword}",
     ]
     script = var.startupScript
   }
