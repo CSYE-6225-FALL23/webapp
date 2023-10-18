@@ -82,6 +82,11 @@ variable "webappDestinationFolder" {
   default = "/home/admin/webapp.zip"
 }
 
+variable "postgresDB" {
+  type    = string
+  default = "csye6225"
+}
+
 source "amazon-ebs" "webapp-ami" {
   access_key = var.aws_access_key
   secret_key = var.aws_secret_access_key
@@ -114,6 +119,9 @@ build {
     "source.amazon-ebs.webapp-ami"
   ]
   provisioner "shell" {
+    environment_vars = [
+      "POSTGRES_DB=${var.postgresDB}",
+    ]
     script = var.startupScript
   }
   provisioner "file" {
