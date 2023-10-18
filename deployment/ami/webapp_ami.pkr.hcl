@@ -53,12 +53,12 @@ variable "instanceType" {
 }
 
 variable "ami_users" {
-  type    = list
+  type    = list(string)
   default = ["273429938290"]
 }
 
 variable "ami_regions" {
-  type    = list
+  type    = list(string)
   default = ["us-east-1"]
 }
 
@@ -67,7 +67,7 @@ variable "ebsVolumeSize" {
   default = 25
 }
 
-variable "ebsVolebsVolumeTypeumeSize" {
+variable "ebsVolumeType" {
   type    = string
   default = "gp2"
 }
@@ -89,7 +89,7 @@ source "amazon-ebs" "webapp-ami" {
   region          = var.ami_region
   ami_name        = "${var.ami_prefix}-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "CSYE 6225 Webapp AMI"
-  ami_regions = var.ami_regions
+  ami_regions     = var.ami_regions
 
   aws_polling {
     delay_seconds = 120
