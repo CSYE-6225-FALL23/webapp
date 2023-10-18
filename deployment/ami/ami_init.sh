@@ -22,8 +22,8 @@ node -v
 npm -v
 
 # Create a PostgreSQL user and database
-sudo -u postgres psql -c "CREATE DATABASE ${} OWNER postgres;"
-sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+sudo -u postgres psql -c "CREATE DATABASE ${POSTGRES_DB} OWNER postgres;"
+sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD ${POSTGRES_PASSWORD};"
 
 # Restart PostgreSQL to apply the changes
 sudo systemctl restart postgresql
