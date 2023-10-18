@@ -51,7 +51,7 @@ class AssignmentClient {
           "deadline",
           "assignment_updated",
           "assignment_created",
-          "UserId"
+          "UserId",
         ],
       });
       return assignment;

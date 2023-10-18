@@ -14,7 +14,7 @@ const { isDBOnline } = require("../middleware/auth.js");
 
 const {
   canUserDeleteAssignment,
-  canUserUpdateAssignment
+  canUserUpdateAssignment,
 } = require("../middleware/assignmentAuthorization.js");
 
 const route = express.Router();
