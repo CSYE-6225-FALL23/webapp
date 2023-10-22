@@ -65,7 +65,9 @@ const getAssignment = async (req, res) => {
     const assignment = await assignmentClient.getAssignment(req.params.id);
     if (!assignment) throw new AssignmentErrorHandler("ASSGN_101");
 
-    res.status(200).send(assignment.toJSON());
+    const assignmentjson = assignment.toJSON();
+    delete assignmentjson.UserId;
+    res.status(200).send(assignmentjson);
   } catch (error) {
     console.error("Error getting assignment:", error);
     if (!error.statusCode) error.statusCode = 500;

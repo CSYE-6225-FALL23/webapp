@@ -2,7 +2,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const dotenv = require("dotenv");
+const dotenv = require('dotenv').config({ path: require('path').join(process.cwd(), `.env.${process.env.NODE_ENV}`) });
+console.log(process.env.NODE_ENV)
 
 // Import custom files
 const route = require("./route/route");
@@ -11,9 +12,6 @@ const handleUnsupportedMethods = require("./middleware/unsupportedRoute");
 const helper = require("./helper/helper");
 
 const syncModels = require("database").syncModels;
-
-// Load environment variables
-dotenv.config();
 
 // Get environment variables
 const PORT = process.env.SERVER_PORT;
