@@ -79,7 +79,7 @@ variable "startupScript" {
 
 variable "webappDestinationFolder" {
   type    = string
-  default = "/home/admin/webapp.zip"
+  default = "/var/www/webapp.zip"
 }
 
 variable "postgresDB" {
