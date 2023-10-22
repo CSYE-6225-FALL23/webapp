@@ -20,6 +20,7 @@ class Connection {
     const sequelize = {
       host: `${Connection.uri}?sslmode=require`,
       dialect: "postgres",
+      logging:false,
       define: {
         timestamps: false, // Adds 'createdAt' and 'updatedAt' fields to models
         underscored: true, // Uses snake_case names

@@ -17,7 +17,8 @@ jobs:
       - name: create env file
         run: |
           cd ./server
-          touch .env
+          touch .env.test
+          echo SERVER_PORT=${{ vars.SERVER_PORT }} >> .env
           echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
           echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
