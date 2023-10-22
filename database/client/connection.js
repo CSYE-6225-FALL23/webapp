@@ -17,15 +17,25 @@ class Connection {
    * @returns {Object} Connection Object
    */
   static getDb = () => {
-    return new Sequelize(Connection.db, Connection.user, Connection.pwd, {
-      host: Connection.uri,
+    const sequelize = {
+      host: `${Connection.uri}?sslmode=require`,
       dialect: "postgres",
-      logging: false,
       define: {
         timestamps: false, // Adds 'createdAt' and 'updatedAt' fields to models
         underscored: true, // Uses snake_case names
       },
-    });
+    }
+
+    // Enable SSL for RDS
+    if (process.env.NODE_ENV === 'prod') {
+      sequelize.dialectOptions = {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false
+        },
+      }
+    }
+    return new Sequelize(Connection.db, Connection.user, Connection.pwd, sequelize);
   };
 
   /**
