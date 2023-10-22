@@ -5,16 +5,15 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev node index.js",
-    "prod": "cross-env NODE_ENV=prod node index.js",
-    "format": "prettier --write \"**/*.js\"",
-    "test": "cross-env NODE_ENV=test mocha integration-test --exit"
+    "prod": "NODE_ENV=prod node index.js",
+    "test": "NODE_ENV=test mocha integration-test --exit",
+    "format": "prettier --write \"**/*.js\""
   },
   "author": "Sudarshan Kudli",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
-    "cross-env": "^7.0.3",
     "csv-parser": "^3.0.0",
     "database": "file:../database",
     "dotenv": "^16.0.1",
@@ -24,6 +23,7 @@
   "devDependencies": {
     "chai": "^4.3.10",
     "chai-http": "^4.4.0",
+    "cross-env": "^7.0.3",
     "mocha": "^10.2.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.0",
