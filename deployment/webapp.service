@@ -1,0 +1,14 @@
+[Unit]
+Description=webapp - making your environment variables rad
+Documentation=https://example.com
+After=network.target
+
+[Service]
+Environment=NODE_PORT=8000
+Type=simple
+User=admin
+ExecStart=/usr/bin/node /home/admin/webapp/server/index.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
