@@ -18,7 +18,7 @@ class Connection {
    */
   static getDb = () => {
     const sequelize = {
-      host: `${Connection.uri}?sslmode=require`,
+      host: Connection.uri,
       dialect: "postgres",
       logging:false,
       define: {
@@ -29,6 +29,7 @@ class Connection {
 
     // Enable SSL for RDS
     if (process.env.NODE_ENV === 'prod') {
+      sequelize.host = sequelize.host + '?sslmode=require'
       sequelize.dialectOptions = {
         ssl: {
           require: true,
