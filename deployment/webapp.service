@@ -1,13 +1,14 @@
 [Unit]
-Description=webapp - making your environment variables rad
-Documentation=https://example.com
+Description=webapp
+Documentation=https://github.com/CSYE-6225-FALL23/webapp
 After=network.target
 
 [Service]
-Environment=NODE_PORT=8000
 Type=simple
-User=admin
-ExecStart=/usr/bin/node /home/admin/webapp/server/index.js
+User=csye6225
+Environment=NODE_ENV=prod
+EnvironmentFile=/var/www/webapp/server/.env.prod
+ExecStart=/usr/bin/node /var/www/webapp/server/index.js
 Restart=on-failure
 
 [Install]
