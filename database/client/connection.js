@@ -29,10 +29,8 @@ class Connection {
 
     // Enable SSL for RDS
     if (process.env.NODE_ENV === 'prod') {
-      sequelize.host = sequelize.host + '?sslmode=require'
       sequelize.dialectOptions = {
         ssl: {
-          require: true,
           rejectUnauthorized: false
         },
       }
