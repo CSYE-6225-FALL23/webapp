@@ -8,10 +8,10 @@ sudo apt-get -y remove git
 sudo apt-get -y autoremove
 
 # Install PostgreSQL
-sudo apt install unzip postgresql postgresql-contrib -y
+# sudo apt install unzip postgresql postgresql-contrib -y
 
 # Install Node.js and npm
-sudo apt install nodejs npm -y
+sudo apt install unzip nodejs npm -y
 
 # Verify Node.js and npm installation
 node -v
