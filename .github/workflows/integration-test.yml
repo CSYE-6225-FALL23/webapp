@@ -18,7 +18,7 @@ jobs:
         run: |
           cd ./server
           touch .env.test
-          echo SERVER_PORT=${{ vars.SERVER_PORT }} >> .env
+          echo SERVER_PORT=${{ vars.SERVER_PORT }} >> .env.test
           echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
           echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
