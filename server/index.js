@@ -3,7 +3,20 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require('dotenv').config({ path: require('path').join(process.cwd(), `.env.${process.env.NODE_ENV}`) });
-console.log('Environment detected -', process.env.NODE_ENV)
+logger.info('Environment detected -', process.env.NODE_ENV)
+
+const winston = require('winston');
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  defaultMeta: { service: 'user-service' },
+  transports: [
+    new winston.transports.File({ filename: 'webapp.log' }),
+  ],
+});
+
+logger.log('info', 'Environment detected -', process.env.NODE_ENV);
 
 // Import custom files
 const route = require("./route/route");
@@ -58,18 +71,18 @@ app.use("*", (req, res) => {
     await syncModels();
 
     const filePath = process.env.FILEPATH;
-    console.log(`Loading users from:`, filePath);
+    logger.info(`Loading users from:`, filePath);
     const users = await helper.readUsersFromCsv(filePath);
     const addedUsers = await helper.createDefaultUsers(users);
-    console.log(`Added ${addedUsers} users`);
+    logger.info(`Added ${addedUsers} users`);
   } catch (error) {
-    console.log(error);
+    logger.error('error', error);
   }
 })();
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server is running successfully on PORT ${PORT}`);
+  logger.info(`Server is running successfully on PORT ${PORT}`);
 });
 
 module.exports = app;
