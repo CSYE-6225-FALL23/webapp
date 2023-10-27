@@ -123,15 +123,11 @@ build {
   sources = [
     "source.amazon-ebs.webapp-ami"
   ]
-  provisioner "shell" {
-    environment_vars = [
-      "POSTGRES_DB=${var.postgresDB}",
-      "POSTGRES_PASSWORD=${var.postgresPassword}",
-    ]
-    script = var.startupScript
-  }
   provisioner "file" {
     source      = var.zip_file_path
     destination = var.webappDestinationFolder
+  }
+  provisioner "shell" {
+    script = var.startupScript
   }
 }
