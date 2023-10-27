@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=dev node index.js",
     "prod": "NODE_ENV=prod node index.js",
-    "test": "NODE_ENV=test mocha integration-test --exit",
+    "test": "cross-env NODE_ENV=test mocha integration-test --exit",
     "format": "prettier --write \"**/*.js\""
   },
   "author": "Sudarshan Kudli",
