@@ -4,18 +4,9 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require('dotenv').config({ path: require('path').join(process.cwd(), `.env.${process.env.NODE_ENV}`) });
 
-const winston = require('winston');
+const logger = require('./logger/winston');
 
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
-  defaultMeta: { service: 'user-service' },
-  transports: [
-    new winston.transports.File({ filename: '/var/log/webapp.log' }),
-  ],
-});
-
-logger.log('info', 'Environment detected -', process.env.NODE_ENV);
+logger.info('info', 'Environment detected -', process.env.NODE_ENV);
 
 // Import custom files
 const route = require("./route/route");

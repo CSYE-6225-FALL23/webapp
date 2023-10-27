@@ -2,6 +2,7 @@
 const Connection = require("database").Connection;
 
 const GeneralErrorHandler = require("../error/generalErrorHandler");
+const logger = require("../logger/winston");
 
 /**
  * Get DB Status
@@ -20,7 +21,7 @@ const getDBHealthStatus = async (req, res) => {
     if (!isDBRunning) throw new GeneralErrorHandler("GEN_103");
     res.status(200).send();
   } catch (error) {
-    console.error("Unable to connect to the database:", error);
+    logger.error("Unable to connect to the database:", error);
     res.status(error.statusCode).send();
   }
 };
