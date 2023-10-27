@@ -7,26 +7,25 @@ sudo apt upgrade -y
 sudo apt-get -y remove git
 sudo apt-get -y autoremove
 
-# Install PostgreSQL
-# sudo apt install unzip postgresql postgresql-contrib -y
+# Install Cloudwatch-Agent
+wget https://amazoncloudwatch-agent.s3.amazonaws.com/debian/amd64/latest/amazon-cloudwatch-agent.deb
+sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
 
 # Install Node.js and npm
 sudo apt install unzip nodejs npm -y
 
-# Verify Node.js and npm installation
-node -v
-npm -v
+APP_DIR="/var/www/webapp"
 
-APP_USER=csye6225
-APP_USER_PASSWORD=csye6225
-APP_GROUP=csye6225
+# Create the destination directory and copy files
+sudo mkdir -p /var/www/
+sudo cp -rf /home/admin/webapp.zip /var/www/
+sudo unzip -o /var/www/webapp.zip -d $APP_DIR
 
-# Create the user
-sudo useradd -m $APP_USER
-sudo groupadd $APP_GROUP
+# ENV file
+sudo touch /opt/.env.prod
 
-# Change user password
-echo "$APP_USER:$APP_USER_PASSWORD" | sudo chpasswd
+# Copy systemd file
+sudo cp $APP_DIR/deployment/webapp.service /lib/systemd/system
 
-# Add the user to the group
-sudo usermod -aG $APP_GROUP $APP_USER
+# Copy config and start cloudwatch agent
+sudo cp -f $APP_DIR/deployment/config.json /opt/aws/amazon-cloudwatch-agent/bin/config.json
