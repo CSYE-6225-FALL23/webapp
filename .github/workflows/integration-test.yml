@@ -20,10 +20,10 @@ jobs:
           touch .env.test
           echo SERVER_PORT=${{ vars.SERVER_PORT }} >> .env.test
           echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env.test
-          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
-          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-          echo POSTGRES_URI=${{ secrets.POSTGRES_URI }} >> .env
-          echo FILEPATH=${{ secrets.FILEPATH }} >> .env
+          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env.test
+          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env.test
+          echo POSTGRES_URI=${{ secrets.POSTGRES_URI }} >> .env.test
+          echo FILEPATH=${{ secrets.FILEPATH }} >> .env.test
 
       - name: Install and run PostgreSQL
         run: |
