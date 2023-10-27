@@ -14,16 +14,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # - name: create env file
-      #   run: |
-      #     cd ./server
-      #     touch .env.test
-      #     echo SERVER_PORT=${{ vars.SERVER_PORT }} >> .env.test
-      #     echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env.test
-      #     echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
-      #     echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-      #     echo POSTGRES_URI=${{ secrets.POSTGRES_URI }} >> .env
-      #     echo FILEPATH=${{ secrets.FILEPATH }} >> .env
+      - name: create env file
+        run: |
+          cd ./server
+          touch .env.test
+          echo SERVER_PORT=${{ vars.SERVER_PORT }} >> .env.test
+          echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env.test
+          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          echo POSTGRES_URI=${{ secrets.POSTGRES_URI }} >> .env
+          echo FILEPATH=${{ secrets.FILEPATH }} >> .env
 
       - name: Install and run PostgreSQL
         run: |
