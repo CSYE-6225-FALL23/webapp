@@ -1,5 +1,6 @@
 const AuthErrorHandler = require("../error/authErrorHandler");
 const GeneralErrorHandler = require("../error/generalErrorHandler");
+const logger = require("../logger/winston");
 const UserClient = require("database").UserClient;
 
 const Connection = require("database").Connection;
@@ -38,7 +39,7 @@ const isUserAuthenticated = async (req, res, next) => {
     };
     next();
   } catch (error) {
-    console.log(error);
+    logger.error('Failed to Authenticate User', error);
     if (!error.statusCode) error.statusCode = 500;
     res.status(error.statusCode).send(error);
   }
@@ -50,7 +51,7 @@ const isDBOnline = async (req, res, next) => {
     if (!isDBRunning) throw new GeneralErrorHandler("GEN_103");
     next();
   } catch (error) {
-    console.log(error);
+    logger.error('DB Connection error', error);
     if (!error.statusCode) error.statusCode = 500;
     res.status(error.statusCode).send(error);
   }

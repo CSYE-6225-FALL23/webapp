@@ -2,8 +2,7 @@
 const AssignmentClient = require("database").AssignmentClient;
 const AssignmentErrorHandler = require("../error/assignmentErrorHandler");
 const GeneralErrorHandler = require("../error/generalErrorHandler");
-
-const isValidUUID = require("../helper/helper").isValidUUID;
+const logger = require('../logger/winston');
 
 const assignmentClient = new AssignmentClient();
 
@@ -40,7 +39,7 @@ const createAssignment = async (req, res) => {
     );
     res.status(201).send(assignment);
   } catch (error) {
-    console.error("Error creating assignment:", error);
+    logger.error("Error creating assignment:", error);
     if (!error.statusCode) error.statusCode = 500;
     res.status(error.statusCode).send(error);
   }
@@ -52,7 +51,7 @@ const deleteAssignment = async (req, res) => {
     if (!isDeleted) throw new AssignmentErrorHandler("ASSGN_101");
     res.status(204).send();
   } catch (error) {
-    console.error("Error deleting assignment:", error);
+    logger.error("Error deleting assignment:", error);
     if (!error.statusCode) error.statusCode = 500;
     res.status(error.statusCode).send(error);
   }
@@ -69,7 +68,7 @@ const getAssignment = async (req, res) => {
     delete assignmentjson.UserId;
     res.status(200).send(assignmentjson);
   } catch (error) {
-    console.error("Error getting assignment:", error);
+    logger.error("Error getting assignment:", error);
     if (!error.statusCode) error.statusCode = 500;
     res.status(error.statusCode).send(error);
   }
@@ -87,7 +86,7 @@ const getAllAssignment = async (req, res) => {
     });
     res.status(200).send(assignments);
   } catch (error) {
-    console.error("Error getting assignment:", error);
+    logger.error("Error getting assignment:", error);
     if (!error.statusCode) error.statusCode = 500;
     res.status(error.statusCode).send(error);
   }
@@ -105,7 +104,7 @@ const updateAssignment = async (req, res) => {
     );
     res.status(204).send();
   } catch (error) {
-    console.error("Error updating assignment:", error);
+    logger.error("Error updating assignment:", error);
     if (!error.statusCode) error.statusCode = 500;
     res.status(error.statusCode).send(error);
   }
