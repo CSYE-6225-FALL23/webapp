@@ -29,3 +29,7 @@ sudo cp $APP_DIR/deployment/webapp.service /lib/systemd/system
 
 # Copy config and start cloudwatch agent
 sudo cp -f $APP_DIR/deployment/config.json /opt/aws/amazon-cloudwatch-agent/bin/config.json
+
+sudo systemctl daemon reload
+sudo systemctl enable webapp.service
+sudo systemctl start webapp.service
