@@ -91,4 +91,4 @@ jobs:
             -var "instanceType=${{ vars.INSTANCE_TYPE }}" \
             -var "ebsVolumeSize=${{ vars.EBS_VOLUME_SIZE }}" \
             -var "ebsVolumeType=${{ vars.EBS_VOLUME_TYPE }}" \
-            -var "webappDestinationFolder=${{ vars.WEBAPP_DESTINATION_PATH }}" \ .
+            -var "webappDestinationFolder=${{ vars.WEBAPP_DESTINATION_PATH }}" .
