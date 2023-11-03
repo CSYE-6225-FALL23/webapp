@@ -82,16 +82,6 @@ variable "webappDestinationFolder" {
   default = "/home/admin/webapp.zip"
 }
 
-variable "postgresDB" {
-  type    = string
-  default = ""
-}
-
-variable "postgresPassword" {
-  type    = string
-  default = ""
-}
-
 source "amazon-ebs" "webapp-ami" {
   access_key = var.aws_access_key
   secret_key = var.aws_secret_access_key
