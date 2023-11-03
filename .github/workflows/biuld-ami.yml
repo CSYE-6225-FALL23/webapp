@@ -91,6 +91,4 @@ jobs:
             -var "instanceType=${{ vars.INSTANCE_TYPE }}" \
             -var "ebsVolumeSize=${{ vars.EBS_VOLUME_SIZE }}" \
             -var "ebsVolumeType=${{ vars.EBS_VOLUME_TYPE }}" \
-            -var "webappDestinationFolder=${{ vars.WEBAPP_DESTINATION_PATH }}" \
-            -var "postgresDB=${{ secrets.POSTGRES_DB }}" \
-            -var "postgresPassword=${{ secrets.POSTGRES_PASSWORD }}" .
+            -var "webappDestinationFolder=${{ vars.WEBAPP_DESTINATION_PATH }}" \ .
