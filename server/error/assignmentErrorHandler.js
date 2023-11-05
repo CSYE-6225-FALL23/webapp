@@ -34,6 +34,13 @@ const assignmentError = {
     description: "Expected valid value for number of attempts",
     timestamp: new Date().toISOString(),
   },
+  ASSGN_106: {
+    statusCode: 400,
+    code: "ASSGN_106",
+    msg: "Invalid body",
+    description: "Invalid assignment name",
+    timestamp: new Date().toISOString(),
+  },
 };
 
 class AssignmentErrorHandler extends Error {
