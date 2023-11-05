@@ -6,6 +6,9 @@ const logger = require('../logger/winston');
 
 const assignmentClient = new AssignmentClient();
 
+const StatsD = require('node-statsd');
+const statsd = new StatsD({ host: 'localhost', port: 8125 });
+
 /**
  * Create Assignment
  *
@@ -15,6 +18,8 @@ const assignmentClient = new AssignmentClient();
  */
 const createAssignment = async (req, res) => {
   try {
+    statsd.increment('api.request.healthz');
+
     if (Object.keys(req.query).length > 0)
       throw new GeneralErrorHandler("GEN_101");
 
@@ -23,9 +28,10 @@ const createAssignment = async (req, res) => {
       throw new GeneralErrorHandler("GEN_102");
     if (points > 10 || points < 1 || points % 1 != 0)
       throw new AssignmentErrorHandler("ASSGN_104");
-    if (deadline <= new Date().toISOString())
+    if (deadline <= new Date().toISOString() || !/(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})Z/.test(deadline))
       throw new AssignmentErrorHandler("ASSGN_102");
     if (num_of_attempts % 1 != 0) throw new AssignmentErrorHandler("ASSGN_105");
+    if (!isNaN(name)) throw new AssignmentErrorHandler("ASSGN_106")
 
     const payload = {
       name: name,
@@ -37,6 +43,7 @@ const createAssignment = async (req, res) => {
       payload,
       req.user.id,
     );
+    logger.info("Assignment created", assignment);
     res.status(201).send(assignment);
   } catch (error) {
     logger.error("Error creating assignment:", error);
@@ -47,8 +54,11 @@ const createAssignment = async (req, res) => {
 
 const deleteAssignment = async (req, res) => {
   try {
+    statsd.increment('api.request.deleteAssignment');
+
     const isDeleted = await assignmentClient.deleteAssignment(req.params.id);
     if (!isDeleted) throw new AssignmentErrorHandler("ASSGN_101");
+    logger.info("Assignment deleted", req.params.id);
     res.status(204).send();
   } catch (error) {
     logger.error("Error deleting assignment:", error);
@@ -59,6 +69,8 @@ const deleteAssignment = async (req, res) => {
 
 const getAssignment = async (req, res) => {
   try {
+    statsd.increment('api.request.getAssignment');
+
     if (req.headers["content-type"]) throw new GeneralErrorHandler("GEN_102");
 
     const assignment = await assignmentClient.getAssignment(req.params.id);
@@ -66,6 +78,7 @@ const getAssignment = async (req, res) => {
 
     const assignmentjson = assignment.toJSON();
     delete assignmentjson.UserId;
+    logger.info("Assignment fetched", req.params.id);
     res.status(200).send(assignmentjson);
   } catch (error) {
     logger.error("Error getting assignment:", error);
@@ -76,6 +89,8 @@ const getAssignment = async (req, res) => {
 
 const getAllAssignment = async (req, res) => {
   try {
+    statsd.increment('api.request.getAllAssignment');
+
     if (req.headers["content-type"]) throw new GeneralErrorHandler("GEN_102");
     if (Object.keys(req.query).length > 0)
       throw new GeneralErrorHandler("GEN_101");
@@ -94,6 +109,8 @@ const getAllAssignment = async (req, res) => {
 
 const updateAssignment = async (req, res) => {
   try {
+    statsd.increment('api.request.updateAssignment');
+
     const assignmentId = req.params.id;
     if (!assignmentId) throw new AssignmentErrorHandler("ASSGN_103");
 
@@ -102,6 +119,7 @@ const updateAssignment = async (req, res) => {
       assignmentId,
       req.user.id,
     );
+    logger.info("Assignment updated", req.params.id);
     res.status(204).send();
   } catch (error) {
     logger.error("Error updating assignment:", error);
