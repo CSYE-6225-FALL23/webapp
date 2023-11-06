@@ -44,7 +44,7 @@ variable "subnet_id" {
 
 variable "zip_file_path" {
   type    = string
-  default = "../../webapp.zip"
+  default = "./webapp.zip"
 }
 
 variable "instanceType" {
