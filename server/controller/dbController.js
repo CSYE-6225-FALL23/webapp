@@ -4,6 +4,8 @@ const Connection = require("database").Connection;
 const GeneralErrorHandler = require("../error/generalErrorHandler");
 const logger = require("../logger/winston");
 
+const StatsD = require('node-statsd');
+const statsd = new StatsD({ host: 'localhost', port: 8125 });
 
 /**
  * Get DB Status
@@ -14,6 +16,8 @@ const logger = require("../logger/winston");
  */
 const getDBHealthStatus = async (req, res) => {
   try {
+    statsd.increment('api.request.healthz');
+
     if (Object.keys(req.query).length > 0)
       throw new GeneralErrorHandler("GEN_101");
     if (req.headers["content-type"]) throw new GeneralErrorHandler("GEN_102");
