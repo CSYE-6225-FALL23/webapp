@@ -61,7 +61,7 @@ app.use("*", (req, res) => {
     await syncModels();
 
     const filePath = process.env.FILEPATH;
-    logger.info(`Loading users from:`, filePath);
+    logger.info(`Loading users from: ${filePath}`);
     const users = await helper.readUsersFromCsv(filePath);
     const addedUsers = await helper.createDefaultUsers(users);
     logger.info(`Added ${addedUsers} users`);

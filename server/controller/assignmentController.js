@@ -18,7 +18,7 @@ const statsd = new StatsD({ host: 'localhost', port: 8125 });
  */
 const createAssignment = async (req, res) => {
   try {
-    statsd.increment('api.request.healthz');
+    statsd.increment('api.request.createAssignment');
 
     if (Object.keys(req.query).length > 0)
       throw new GeneralErrorHandler("GEN_101");
@@ -43,7 +43,7 @@ const createAssignment = async (req, res) => {
       payload,
       req.user.id,
     );
-    logger.info("Assignment created", assignment);
+    logger.info(`Assignment created: ${assignment}`);
     res.status(201).send(assignment);
   } catch (error) {
     logger.error("Error creating assignment:", error);
@@ -58,7 +58,7 @@ const deleteAssignment = async (req, res) => {
 
     const isDeleted = await assignmentClient.deleteAssignment(req.params.id);
     if (!isDeleted) throw new AssignmentErrorHandler("ASSGN_101");
-    logger.info("Assignment deleted", req.params.id);
+    logger.info(`Assignment deleted: ${req.params.id}`);
     res.status(204).send();
   } catch (error) {
     logger.error("Error deleting assignment:", error);
@@ -78,7 +78,7 @@ const getAssignment = async (req, res) => {
 
     const assignmentjson = assignment.toJSON();
     delete assignmentjson.UserId;
-    logger.info("Assignment fetched", req.params.id);
+    logger.info(`Assignment fetched: ${req.params.id}`);
     res.status(200).send(assignmentjson);
   } catch (error) {
     logger.error("Error getting assignment:", error);
@@ -99,6 +99,7 @@ const getAllAssignment = async (req, res) => {
     assignments.forEach((assignment) => {
       return assignment.toJSON();
     });
+    logger.info(`All assignment fetched by ${req.user.id}`);
     res.status(200).send(assignments);
   } catch (error) {
     logger.error("Error getting assignment:", error);
@@ -119,7 +120,7 @@ const updateAssignment = async (req, res) => {
       assignmentId,
       req.user.id,
     );
-    logger.info("Assignment updated", req.params.id);
+    logger.info(`Assignment ${req.params.id} updated`);
     res.status(204).send();
   } catch (error) {
     logger.error("Error updating assignment:", error);
