@@ -4,6 +4,7 @@ APP_USER=csye6225
 APP_USER_PASSWORD=csye6225
 APP_GROUP=csye6225
 APP_DIR="/var/www/webapp"
+ENV_DIR="/opt/.env.prod"
 
 # Update the package list and upgrade the system
 sudo apt update
@@ -29,6 +30,9 @@ sudo cp $APP_DIR/deployment/webapp.service /lib/systemd/system
 
 # Copy config and start cloudwatch agent
 sudo cp -f $APP_DIR/deployment/config.json /opt/aws/amazon-cloudwatch-agent/bin/config.json
+
+# Create ENV file
+sudo touch $ENV_DIR
 
 # Create the user
 sudo useradd -m $APP_USER
