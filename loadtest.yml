@@ -1,8 +1,8 @@
 config:
   target: "http://dev.skudli.xyz"
   phases:
-    - duration: 180
-      arrivalRate: 100
+    - duration: 300
+      arrivalRate: 150
 
 scenarios:
   - flow:
