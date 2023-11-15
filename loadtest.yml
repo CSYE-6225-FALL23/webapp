@@ -1,0 +1,10 @@
+config:
+  target: "http://dev.skudli.xyz"
+  phases:
+    - duration: 180
+      arrivalRate: 100
+
+scenarios:
+  - flow:
+    - get:
+        url: "/healthz"
