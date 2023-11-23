@@ -48,6 +48,13 @@ const assignmentError = {
     description: "Your submissions have reached the maximum limit",
     timestamp: new Date().toISOString(),
   },
+  ASSGN_108: {
+    statusCode: 400,
+    code: "ASSGN_108",
+    msg: "Invalid submission URL",
+    description: "Enter a valid submission URL",
+    timestamp: new Date().toISOString(),
+  },
 };
 
 class AssignmentErrorHandler extends Error {
