@@ -1,10 +1,13 @@
 // Import custom files
 const AssignmentClient = require("database").AssignmentClient;
+const SubmissionClient = require("database").SubmissionClient;
+
 const AssignmentErrorHandler = require("../error/assignmentErrorHandler");
 const GeneralErrorHandler = require("../error/generalErrorHandler");
 const logger = require('../logger/winston');
 
 const assignmentClient = new AssignmentClient();
+const submissionClient = new SubmissionClient();
 
 const StatsD = require('node-statsd');
 const statsd = new StatsD({ host: 'localhost', port: 8125 });
@@ -38,6 +41,7 @@ const createAssignment = async (req, res) => {
       points: points,
       num_of_attempts: num_of_attempts,
       deadline: deadline,
+      submissions: 0
     };
     const assignment = await assignmentClient.createAssignment(
       payload,
@@ -129,10 +133,41 @@ const updateAssignment = async (req, res) => {
   }
 };
 
+const submitAssignment = async (req, res) => {
+  try {
+    statsd.increment('api.request.submitAssignment');
+
+    const assignmentId = req.params.id;
+    if (!assignmentId) throw new AssignmentErrorHandler("ASSGN_103");
+
+    const assignment = await assignmentClient.getAssignment(assignmentId);
+    if (!assignment) throw new AssignmentErrorHandler("ASSGN_101")
+
+    const submission = await submissionClient.getSubmissionsByID(assignmentId);
+    if (submission.id) {
+      if (submission.attempts >= assignment.num_of_attempts) throw new AssignmentErrorHandler("ASSGN_107")
+      const updatedSubmission = await submissionClient.updateSubmission({
+        submission_url: req.body.submission_url,
+      }, submission.id)
+      logger.info(`Assignment ${req.params.id} submission successfully updated`);
+      res.status(201).send(updatedSubmission);
+    } else {
+      const createdSubmission = await submissionClient.createSubmission(req.body, assignmentId);
+      logger.info(`Assignment ${req.params.id} submission successfuly created`);
+      res.status(201).send(createdSubmission);
+    }
+  } catch (error) {
+    logger.error("Error submitting assignment:", error);
+    if (!error.statusCode) error.statusCode = 500;
+    res.status(error.statusCode).send(error);
+  }
+};
+
 module.exports = {
   createAssignment,
   deleteAssignment,
   getAssignment,
   getAllAssignment,
   updateAssignment,
+  submitAssignment
 };

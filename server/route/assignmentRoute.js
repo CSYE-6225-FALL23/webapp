@@ -7,6 +7,7 @@ const {
   getAllAssignment,
   getAssignment,
   updateAssignment,
+  submitAssignment
 } = require("../controller/assignmentController.js");
 
 const { isUserAuthenticated } = require("../middleware/auth.js");
@@ -37,6 +38,13 @@ route.delete(
   isUserAuthenticated,
   canUserDeleteAssignment,
   deleteAssignment,
+);
+
+route.post(
+  "/:id/submission",
+  isDBOnline,
+  isUserAuthenticated,
+  submitAssignment,
 );
 
 module.exports = route;

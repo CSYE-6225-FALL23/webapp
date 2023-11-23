@@ -41,6 +41,13 @@ const assignmentError = {
     description: "Invalid assignment name",
     timestamp: new Date().toISOString(),
   },
+  ASSGN_107: {
+    statusCode: 400,
+    code: "ASSGN_107",
+    msg: "Submission limit exceeded",
+    description: "Your submissions have reached the maximum limit",
+    timestamp: new Date().toISOString(),
+  },
 };
 
 class AssignmentErrorHandler extends Error {
