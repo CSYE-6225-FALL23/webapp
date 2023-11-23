@@ -140,6 +140,8 @@ const submitAssignment = async (req, res) => {
     const assignmentId = req.params.id;
     if (!assignmentId) throw new AssignmentErrorHandler("ASSGN_103");
 
+    if (!req.body?.submission_url) throw new AssignmentErrorHandler("ASSGN_108")
+
     const assignment = await assignmentClient.getAssignment(assignmentId);
     if (!assignment) throw new AssignmentErrorHandler("ASSGN_101")
 
