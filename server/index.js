@@ -2,11 +2,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const dotenv = require('dotenv').config({ path: require('path').join(process.cwd(), `.env.${process.env.NODE_ENV}`) });
+const dotenv = require("dotenv").config({
+  path: require("path").join(process.cwd(), `.env.${process.env.NODE_ENV}`),
+});
 
-const logger = require('./logger/winston');
+const logger = require("./logger/winston");
 
-logger.info('info', 'Environment detected -', process.env.NODE_ENV);
+logger.info("info", "Environment detected -", process.env.NODE_ENV);
 
 // Import custom files
 const route = require("./route/route");
@@ -66,7 +68,7 @@ app.use("*", (req, res) => {
     const addedUsers = await helper.createDefaultUsers(users);
     logger.info(`Added ${addedUsers} users`);
   } catch (error) {
-    logger.error('error', error);
+    logger.error("error", error);
   }
 })();
 

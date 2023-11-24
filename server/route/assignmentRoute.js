@@ -7,7 +7,7 @@ const {
   getAllAssignment,
   getAssignment,
   updateAssignment,
-  submitAssignment
+  submitAssignment,
 } = require("../controller/assignmentController.js");
 
 const { isUserAuthenticated } = require("../middleware/auth.js");

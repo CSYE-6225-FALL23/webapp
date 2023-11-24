@@ -25,6 +25,10 @@ const Submission = Connection.sequelize.define("Submission", {
     },
     attempts: {
         type: DataTypes.INTEGER
+    },
+    user_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
     }
 });
 
