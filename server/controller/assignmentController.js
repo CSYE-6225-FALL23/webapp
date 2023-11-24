@@ -155,15 +155,15 @@ const submitAssignment = async (req, res) => {
     if (assignment.deadline.toISOString() <= new Date().toISOString())
       throw new AssignmentErrorHandler("ASSGN_109");
 
-    let createdSubmission;
-    const submission = await submissionClient.getSubmissionsByID(
+    let submission;
+    submission = await submissionClient.getSubmissionsByID(
       assignmentId,
       req.user.id,
     );
     if (submission.id) {
       if (submission.attempts >= assignment.num_of_attempts)
         throw new AssignmentErrorHandler("ASSGN_107");
-      createdSubmission = await submissionClient.updateSubmission(
+      submission = await submissionClient.updateSubmission(
         {
           submission_url: req.body.submission_url,
         },
@@ -173,7 +173,7 @@ const submitAssignment = async (req, res) => {
         `Assignment ${req.params.id} submission successfully updated`,
       );
     } else {
-      createdSubmission = await submissionClient.createSubmission(
+      submission = await submissionClient.createSubmission(
         req.body,
         assignmentId,
         req.user.id
@@ -181,10 +181,13 @@ const submitAssignment = async (req, res) => {
       logger.info(`Assignment ${req.params.id} submission successfuly created`);
     }
 
-    // const publishResult = await publishSubmissionMessage({
-    //   email: req.user.email,
-    //   submissionUrl: req.body.submission_url,
-    // });
+    const publishResult = await publishSubmissionMessage({
+      email: req.user.email,
+      userId: req.user.id,
+      submissionUrl: req.body.submission_url,
+      submissionId: submission.id,
+      assignmentId: assignment.id,
+    });
 
     res.status(201).send(createdSubmission);
   } catch (error) {
