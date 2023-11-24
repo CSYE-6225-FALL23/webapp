@@ -55,6 +55,13 @@ const assignmentError = {
     description: "Enter a valid submission URL",
     timestamp: new Date().toISOString(),
   },
+  ASSGN_109: {
+    statusCode: 400,
+    code: "ASSGN_109",
+    msg: "Late submission",
+    description: "Submission not permitted after deadline",
+    timestamp: new Date().toISOString(),
+  },
 };
 
 class AssignmentErrorHandler extends Error {

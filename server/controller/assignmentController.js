@@ -2,6 +2,8 @@
 const AssignmentClient = require("database").AssignmentClient;
 const SubmissionClient = require("database").SubmissionClient;
 
+const publishSubmissionMessage = require("../helper/sns").publishSubmissionMessage;
+
 const AssignmentErrorHandler = require("../error/assignmentErrorHandler");
 const GeneralErrorHandler = require("../error/generalErrorHandler");
 const logger = require('../logger/winston');
@@ -145,22 +147,30 @@ const submitAssignment = async (req, res) => {
     const assignment = await assignmentClient.getAssignment(assignmentId);
     if (!assignment) throw new AssignmentErrorHandler("ASSGN_101")
 
+    if (assignment.deadline.toISOString() <= new Date().toISOString()) throw new AssignmentErrorHandler("ASSGN_109")
+
+    let createdSubmission;
     const submission = await submissionClient.getSubmissionsByID(assignmentId);
     if (submission.id) {
       if (submission.attempts >= assignment.num_of_attempts) throw new AssignmentErrorHandler("ASSGN_107")
-      const updatedSubmission = await submissionClient.updateSubmission({
+      createdSubmission = await submissionClient.updateSubmission({
         submission_url: req.body.submission_url,
       }, submission.id)
       logger.info(`Assignment ${req.params.id} submission successfully updated`);
-      res.status(201).send(updatedSubmission);
     } else {
-      const createdSubmission = await submissionClient.createSubmission(req.body, assignmentId);
+      createdSubmission = await submissionClient.createSubmission(req.body, assignmentId);
       logger.info(`Assignment ${req.params.id} submission successfuly created`);
-      res.status(201).send(createdSubmission);
     }
+  
+    const publishResult = await publishSubmissionMessage({
+      email: req.user.email,
+      submissionUrl: req.body.submission_url
+    });
+
+    res.status(201).send(createdSubmission);
   } catch (error) {
     logger.error("Error submitting assignment:", error);
-    if (!error.statusCode) error.statusCode = 500;
+    if (!error.statusCode) error.statusCode = 400;
     res.status(error.statusCode).send(error);
   }
 };
