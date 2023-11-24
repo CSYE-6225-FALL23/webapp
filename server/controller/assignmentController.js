@@ -2,17 +2,18 @@
 const AssignmentClient = require("database").AssignmentClient;
 const SubmissionClient = require("database").SubmissionClient;
 
-const publishSubmissionMessage = require("../helper/sns").publishSubmissionMessage;
+const publishSubmissionMessage =
+  require("../helper/sns").publishSubmissionMessage;
 
 const AssignmentErrorHandler = require("../error/assignmentErrorHandler");
 const GeneralErrorHandler = require("../error/generalErrorHandler");
-const logger = require('../logger/winston');
+const logger = require("../logger/winston");
 
 const assignmentClient = new AssignmentClient();
 const submissionClient = new SubmissionClient();
 
-const StatsD = require('node-statsd');
-const statsd = new StatsD({ host: 'localhost', port: 8125 });
+const StatsD = require("node-statsd");
+const statsd = new StatsD({ host: "localhost", port: 8125 });
 
 /**
  * Create Assignment
@@ -23,7 +24,7 @@ const statsd = new StatsD({ host: 'localhost', port: 8125 });
  */
 const createAssignment = async (req, res) => {
   try {
-    statsd.increment('api.request.createAssignment');
+    statsd.increment("api.request.createAssignment");
 
     if (Object.keys(req.query).length > 0)
       throw new GeneralErrorHandler("GEN_101");
@@ -33,17 +34,20 @@ const createAssignment = async (req, res) => {
       throw new GeneralErrorHandler("GEN_102");
     if (points > 10 || points < 1 || points % 1 != 0)
       throw new AssignmentErrorHandler("ASSGN_104");
-    if (deadline <= new Date().toISOString() || !/(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})Z/.test(deadline))
+    if (
+      deadline <= new Date().toISOString() ||
+      !/(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})Z/.test(deadline)
+    )
       throw new AssignmentErrorHandler("ASSGN_102");
     if (num_of_attempts % 1 != 0) throw new AssignmentErrorHandler("ASSGN_105");
-    if (!isNaN(name)) throw new AssignmentErrorHandler("ASSGN_106")
+    if (!isNaN(name)) throw new AssignmentErrorHandler("ASSGN_106");
 
     const payload = {
       name: name,
       points: points,
       num_of_attempts: num_of_attempts,
       deadline: deadline,
-      submissions: 0
+      submissions: 0,
     };
     const assignment = await assignmentClient.createAssignment(
       payload,
@@ -60,7 +64,7 @@ const createAssignment = async (req, res) => {
 
 const deleteAssignment = async (req, res) => {
   try {
-    statsd.increment('api.request.deleteAssignment');
+    statsd.increment("api.request.deleteAssignment");
 
     const isDeleted = await assignmentClient.deleteAssignment(req.params.id);
     if (!isDeleted) throw new AssignmentErrorHandler("ASSGN_101");
@@ -75,7 +79,7 @@ const deleteAssignment = async (req, res) => {
 
 const getAssignment = async (req, res) => {
   try {
-    statsd.increment('api.request.getAssignment');
+    statsd.increment("api.request.getAssignment");
 
     if (req.headers["content-type"]) throw new GeneralErrorHandler("GEN_102");
 
@@ -95,7 +99,7 @@ const getAssignment = async (req, res) => {
 
 const getAllAssignment = async (req, res) => {
   try {
-    statsd.increment('api.request.getAllAssignment');
+    statsd.increment("api.request.getAllAssignment");
 
     if (req.headers["content-type"]) throw new GeneralErrorHandler("GEN_102");
     if (Object.keys(req.query).length > 0)
@@ -116,7 +120,7 @@ const getAllAssignment = async (req, res) => {
 
 const updateAssignment = async (req, res) => {
   try {
-    statsd.increment('api.request.updateAssignment');
+    statsd.increment("api.request.updateAssignment");
 
     const assignmentId = req.params.id;
     if (!assignmentId) throw new AssignmentErrorHandler("ASSGN_103");
@@ -137,35 +141,50 @@ const updateAssignment = async (req, res) => {
 
 const submitAssignment = async (req, res) => {
   try {
-    statsd.increment('api.request.submitAssignment');
+    statsd.increment("api.request.submitAssignment");
 
     const assignmentId = req.params.id;
     if (!assignmentId) throw new AssignmentErrorHandler("ASSGN_103");
 
-    if (!req.body?.submission_url) throw new AssignmentErrorHandler("ASSGN_108")
+    if (!req.body?.submission_url)
+      throw new AssignmentErrorHandler("ASSGN_108");
 
     const assignment = await assignmentClient.getAssignment(assignmentId);
-    if (!assignment) throw new AssignmentErrorHandler("ASSGN_101")
+    if (!assignment) throw new AssignmentErrorHandler("ASSGN_101");
 
-    if (assignment.deadline.toISOString() <= new Date().toISOString()) throw new AssignmentErrorHandler("ASSGN_109")
+    if (assignment.deadline.toISOString() <= new Date().toISOString())
+      throw new AssignmentErrorHandler("ASSGN_109");
 
     let createdSubmission;
-    const submission = await submissionClient.getSubmissionsByID(assignmentId);
+    const submission = await submissionClient.getSubmissionsByID(
+      assignmentId,
+      req.user.id,
+    );
     if (submission.id) {
-      if (submission.attempts >= assignment.num_of_attempts) throw new AssignmentErrorHandler("ASSGN_107")
-      createdSubmission = await submissionClient.updateSubmission({
-        submission_url: req.body.submission_url,
-      }, submission.id)
-      logger.info(`Assignment ${req.params.id} submission successfully updated`);
+      if (submission.attempts >= assignment.num_of_attempts)
+        throw new AssignmentErrorHandler("ASSGN_107");
+      createdSubmission = await submissionClient.updateSubmission(
+        {
+          submission_url: req.body.submission_url,
+        },
+        submission.id,
+      );
+      logger.info(
+        `Assignment ${req.params.id} submission successfully updated`,
+      );
     } else {
-      createdSubmission = await submissionClient.createSubmission(req.body, assignmentId);
+      createdSubmission = await submissionClient.createSubmission(
+        req.body,
+        assignmentId,
+        req.user.id
+      );
       logger.info(`Assignment ${req.params.id} submission successfuly created`);
     }
-  
-    const publishResult = await publishSubmissionMessage({
-      email: req.user.email,
-      submissionUrl: req.body.submission_url
-    });
+
+    // const publishResult = await publishSubmissionMessage({
+    //   email: req.user.email,
+    //   submissionUrl: req.body.submission_url,
+    // });
 
     res.status(201).send(createdSubmission);
   } catch (error) {
@@ -181,5 +200,5 @@ module.exports = {
   getAssignment,
   getAllAssignment,
   updateAssignment,
-  submitAssignment
+  submitAssignment,
 };

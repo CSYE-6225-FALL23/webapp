@@ -14,7 +14,7 @@ class SubmissionClient {
      * @param {Object} res - Response Object
      * @returns {Object} Assignment Object
      */
-    createSubmission = async (payload, assignment_id) => {
+    createSubmission = async (payload, assignment_id, user_id) => {
         let date = new Date()
         try {
             const { submission_url } = payload;
@@ -23,6 +23,7 @@ class SubmissionClient {
                 attempts: 1,
                 assignment_id: assignment_id,
                 submission_date: date.toISOString(),
+                user_id: user_id,
             });
             return assignment.toJSON();
         } catch (error) {
@@ -54,10 +55,13 @@ class SubmissionClient {
         }
     };
 
-    getSubmissionsByID = async (assignmentId) => {
+    getSubmissionsByID = async (assignmentId, userId) => {
         try {
             const submission = await Submission.findOne({
-                where: { assignment_id: assignmentId }
+                where: { 
+                    assignment_id: assignmentId,
+                    user_id: userId
+                }
             });
             if (submission) return submission.toJSON();
             else return {};

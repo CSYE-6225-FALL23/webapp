@@ -20,7 +20,7 @@ const canUserDeleteAssignment = async (req, res, next) => {
       throw new AuthErrorHandler("AUTH_104");
     next();
   } catch (error) {
-    logger.error('Failed to delete assignment', error);
+    logger.error("Failed to delete assignment", error);
     if (!error.statusCode) error.statusCode = 500;
     res.status(error.statusCode).send(error);
   }
@@ -49,7 +49,7 @@ const canUserUpdateAssignment = async (req, res, next) => {
       throw new AuthErrorHandler("AUTH_104");
     next();
   } catch (error) {
-    logger.error('Failed to update assignment', error);
+    logger.error("Failed to update assignment", error);
     if (!error.statusCode) error.statusCode = 500;
     res.status(error.statusCode).send(error);
   }

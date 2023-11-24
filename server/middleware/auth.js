@@ -39,7 +39,7 @@ const isUserAuthenticated = async (req, res, next) => {
     };
     next();
   } catch (error) {
-    logger.error('Failed to Authenticate User', error);
+    logger.error("Failed to Authenticate User", error);
     if (!error.statusCode) error.statusCode = 500;
     res.status(error.statusCode).send(error);
   }
@@ -51,7 +51,7 @@ const isDBOnline = async (req, res, next) => {
     if (!isDBRunning) throw new GeneralErrorHandler("GEN_103");
     next();
   } catch (error) {
-    logger.error('DB Connection error', error);
+    logger.error("DB Connection error", error);
     if (!error.statusCode) error.statusCode = 500;
     res.status(error.statusCode).send(error);
   }
