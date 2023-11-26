@@ -4,6 +4,7 @@ const csv = require("csv-parser");
 const UserClient = require("database").UserClient;
 const userClient = new UserClient();
 
+// Read users from CSV file
 const readUsersFromCsv = async (filePath) => {
   try {
     if (!filePath) filePath = "../deployment/users.csv";
@@ -33,6 +34,7 @@ const readUsersFromCsv = async (filePath) => {
   }
 };
 
+// Create users
 const createDefaultUsers = async (users) => {
   try {
     const addedUsers = await userClient.createUserBulk(users);
@@ -42,6 +44,7 @@ const createDefaultUsers = async (users) => {
   }
 };
 
+// Check for valid UUID
 const isValidUUID = (id) => {
   const uuidRegex =
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[14][0-9a-fA-F]{3}-[89AB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
