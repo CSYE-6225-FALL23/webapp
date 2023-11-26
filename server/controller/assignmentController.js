@@ -20,7 +20,7 @@ const statsd = new StatsD({ host: "localhost", port: 8125 });
  *
  * @param {Object} req - Request Object
  * @param {Object} res - Response Object
- * @returns {boolean} Status of DB
+ * @returns {Object} Assignment Details
  */
 const createAssignment = async (req, res) => {
   try {
@@ -62,6 +62,12 @@ const createAssignment = async (req, res) => {
   }
 };
 
+/**
+ * Delete Assignment
+ *
+ * @param {Object} req - Request Object
+ * @param {Object} res - Response Object
+ */
 const deleteAssignment = async (req, res) => {
   try {
     statsd.increment("api.request.deleteAssignment");
@@ -77,6 +83,13 @@ const deleteAssignment = async (req, res) => {
   }
 };
 
+/**
+ * Fetch Assignment
+ *
+ * @param {Object} req - Request Object
+ * @param {Object} res - Response Object
+ * @returns {Object} Assignment Details
+ */
 const getAssignment = async (req, res) => {
   try {
     statsd.increment("api.request.getAssignment");
@@ -97,6 +110,13 @@ const getAssignment = async (req, res) => {
   }
 };
 
+/**
+ * Fetch Assignment
+ *
+ * @param {Object} req - Request Object
+ * @param {Object} res - Response Object
+ * @returns {Array<Object>} All Assignment Details
+ */
 const getAllAssignment = async (req, res) => {
   try {
     statsd.increment("api.request.getAllAssignment");
@@ -118,6 +138,12 @@ const getAllAssignment = async (req, res) => {
   }
 };
 
+/**
+ * Fetch Assignment
+ *
+ * @param {Object} req - Request Object
+ * @param {Object} res - Response Object
+ */
 const updateAssignment = async (req, res) => {
   try {
     statsd.increment("api.request.updateAssignment");
@@ -139,10 +165,18 @@ const updateAssignment = async (req, res) => {
   }
 };
 
+/**
+ * Submit Assignment
+ *
+ * @param {Object} req - Request Object
+ * @param {Object} res - Response Object
+ * @returns {Object} Submission Details
+ */
 const submitAssignment = async (req, res) => {
   try {
     statsd.increment("api.request.submitAssignment");
 
+    // Input validations
     const assignmentId = req.params.id;
     if (!assignmentId) throw new AssignmentErrorHandler("ASSGN_103");
 
@@ -156,10 +190,14 @@ const submitAssignment = async (req, res) => {
       throw new AssignmentErrorHandler("ASSGN_109");
 
     let submission;
+
+    // Check if submission already exists for assigment + user
     submission = await submissionClient.getSubmissionsByID(
       assignmentId,
       req.user.id,
     );
+
+    // Update submission if exists
     if (submission.id) {
       if (submission.attempts >= assignment.num_of_attempts)
         throw new AssignmentErrorHandler("ASSGN_107");
@@ -172,16 +210,20 @@ const submitAssignment = async (req, res) => {
       logger.info(
         `Assignment ${req.params.id} submission successfully updated`,
       );
-    } else {
+    }
+
+    // Create a new suubmission otherwise
+    else {
       submission = await submissionClient.createSubmission(
         req.body,
         assignmentId,
-        req.user.id
+        req.user.id,
       );
       logger.info(`Assignment ${req.params.id} submission successfuly created`);
     }
 
-    const publishResult = await publishSubmissionMessage({
+    // Publish message to SNS topic
+    await publishSubmissionMessage({
       email: req.user.email,
       userId: req.user.id,
       submissionUrl: req.body.submission_url,
