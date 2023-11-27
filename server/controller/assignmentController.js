@@ -231,7 +231,7 @@ const submitAssignment = async (req, res) => {
       assignmentId: assignment.id,
     });
 
-    res.status(201).send(createdSubmission);
+    res.status(201).send(submission);
   } catch (error) {
     logger.error("Error submitting assignment:", error);
     if (!error.statusCode) error.statusCode = 400;
