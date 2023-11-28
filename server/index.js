@@ -60,6 +60,7 @@ app.use("*", (req, res) => {
 
 (async () => {
   try {
+    // Build relations between models
     await syncModels();
 
     const filePath = process.env.FILEPATH;
