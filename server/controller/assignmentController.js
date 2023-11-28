@@ -212,14 +212,14 @@ const submitAssignment = async (req, res) => {
       );
     }
 
-    // Create a new suubmission otherwise
+    // Create a new submission otherwise
     else {
       submission = await submissionClient.createSubmission(
         req.body,
         assignmentId,
         req.user.id,
       );
-      logger.info(`Assignment ${req.params.id} submission successfuly created`);
+      logger.info(`Submission for assignment ${req.params.id} successfuly created`);
     }
 
     // Publish message to SNS topic
