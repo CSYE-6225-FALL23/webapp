@@ -14,6 +14,6 @@ exports.publishSubmissionMessage = async (message) => {
       .promise();
     return { status: "success", messageId: data.MessageId };
   } catch (err) {
-    throw new Error("Failed to public topic");
+    throw new Error("Failed to publish topic");
   }
 };
