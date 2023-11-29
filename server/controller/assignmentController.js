@@ -219,7 +219,9 @@ const submitAssignment = async (req, res) => {
         assignmentId,
         req.user.id,
       );
-      logger.info(`Submission for assignment ${req.params.id} successfuly created`);
+      logger.info(
+        `Submission for assignment ${req.params.id} successfuly created`,
+      );
     }
 
     // Publish message to SNS topic
