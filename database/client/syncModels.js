@@ -1,6 +1,7 @@
 const Connection = require("./connection");
 const User = require("../models/user");
 const Assignment = require("../models/assignment");
+const Submission = require("../models/submission");
 const { DataTypes } = require("sequelize");
 
 const sequelize = Connection.sequelize;
@@ -12,6 +13,9 @@ Assignment.belongsTo(User, {
     allowNull: false,
   },
 });
+
+Assignment.hasMany(Submission, { onDelete: 'CASCADE' });
+Submission.belongsTo(Assignment);
 
 const syncModels = async () => {
   try {
