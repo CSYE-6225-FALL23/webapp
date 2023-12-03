@@ -152,7 +152,7 @@ jobs:
           --default-version ${{ steps.template.outputs.latest_version }} \
           --output json
         
- refresh-autoscaling-group:
+  refresh-autoscaling-group:
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY_DEV }}
