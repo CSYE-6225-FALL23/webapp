@@ -105,7 +105,7 @@ jobs:
       
     - name: Retrieve Existing Launch Template Configuration
       run: |
-        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ WEBAPP_ACCOUNT }}-lt"
+        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-lt"
         aws ec2 describe-launch-template-versions \
           --launch-template-name $launch_template_name \
           --output json \
@@ -162,7 +162,7 @@ jobs:
     steps:
     - name: Start Auto Scaling Group Instance Refresh
       run: |
-        asg_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ WEBAPP_ACCOUNT }}-asg"
+        asg_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-asg"
         instance_refresh_command_output=$(aws autoscaling start-instance-refresh \
           --auto-scaling-group-name $asg_name \
           --preferences MinHealthyPercentage=100 \
@@ -176,7 +176,7 @@ jobs:
     - name: Wait for Instance Refresh to Complete
       run: |
         instance_refresh_id="${{ steps.instance_refresh.outputs.instance_refresh_id }}"
-        asg_name=${{ vars.WEBAPP_PROJECT_NAME }}-${{ WEBAPP_ACCOUNT }}-asg"
+        asg_name=${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-asg"
         
         # Check the status of the instance refresh in a loop
         while true; do
