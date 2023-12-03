@@ -129,6 +129,7 @@ jobs:
 
     - name: Create Launch Template Version
       run: |
+        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-lt"
         aws ec2 create-launch-template-version \
           --launch-template-name $launch_template_name \
           --launch-template-data file://updated_launch_template.json
@@ -136,6 +137,7 @@ jobs:
         
     - name: Query Launch Template Versions
       run: |
+        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-lt"
         versions=$(aws ec2 describe-launch-template-versions \
           --launch-template-name $launch_template_name \
           --output json \
@@ -147,6 +149,7 @@ jobs:
 
     - name: Set Latest Launch Template Version as Default
       run: |
+        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-lt"
         aws ec2 modify-launch-template \
           --launch-template-name $launch_template_name \
           --default-version ${{ steps.template.outputs.latest_version }} \
