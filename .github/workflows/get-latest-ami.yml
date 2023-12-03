@@ -1,0 +1,28 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS CLI
+        run: |
+          echo "[default]" > ~/.aws/credentials
+          echo "aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+          echo "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+        shell: bash
+
+      - name: Get Latest AMI ID
+        run: |
+          # Your script or command to get the latest AMI ID
+          # Example for AWS CLI:
+          latest_ami=$(aws ec2 describe-images --owners amazon --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' --output text)
+          echo "Latest AMI ID: $latest_ami"
+          echo "::set-output name=ami_id::$latest_ami"
+        id: ami
+
+      - name: Set AMI ID as an Environment Variable
+        run: echo "AMI_ID=${{ steps.ami.outputs.ami_id }}" >> $GITHUB_ENV
