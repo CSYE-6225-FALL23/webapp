@@ -6,87 +6,87 @@ on:
       - main
 
 jobs:
-  build_ami:
-    name: db_health_check
-    runs-on: ubuntu-latest
+  # build_ami:
+  #   name: db_health_check
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Check if this push is from a PR merge
-        run: |
-          if [[ ${{ github.event_name }} == 'push' && ${{ contains(github.event.head_commit.message, 'Merge pull request') }} ]]; then
-            echo "This push is from a pull request merge."
-          else
-            echo "This push is not from a pull request merge."
-            exit 1
-          fi
+  #   steps:
+  #     - name: Check if this push is from a PR merge
+  #       run: |
+  #         if [[ ${{ github.event_name }} == 'push' && ${{ contains(github.event.head_commit.message, 'Merge pull request') }} ]]; then
+  #           echo "This push is from a pull request merge."
+  #         else
+  #           echo "This push is not from a pull request merge."
+  #           exit 1
+  #         fi
 
-      - name: Checkout code
-        if: success()
-        uses: actions/checkout@v2
+  #     - name: Checkout code
+  #       if: success()
+  #       uses: actions/checkout@v2
 
-      - name: create env file
-        if: success()
-        run: |
-          cd ./server
-          touch .env
-          echo SERVER_PORT=${{ vars.SERVER_PORT }} >> .env
-          echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
-          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
-          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-          echo POSTGRES_URI=${{ secrets.POSTGRES_URI }} >> .env
-          echo FILEPATH=${{ secrets.FILEPATH }} >> .env
+  #     - name: create env file
+  #       if: success()
+  #       run: |
+  #         cd ./server
+  #         touch .env
+  #         echo SERVER_PORT=${{ vars.SERVER_PORT }} >> .env
+  #         echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
+  #         echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+  #         echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+  #         echo POSTGRES_URI=${{ secrets.POSTGRES_URI }} >> .env
+  #         echo FILEPATH=${{ secrets.FILEPATH }} >> .env
 
-      - name: Install and run PostgreSQL
-        if: success()
-        run: |
-          sudo apt-get update
-          sudo apt-get install postgresql
-          sudo service postgresql start
+  #     - name: Install and run PostgreSQL
+  #       if: success()
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install postgresql
+  #         sudo service postgresql start
 
-      - name: Create PostgreSQL Database
-        if: success()
-        run: |
-          sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} OWNER ${{ secrets.POSTGRES_USER }};"
-          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD ${{ secrets.POSTGRES_PASSWORD }};"
+  #     - name: Create PostgreSQL Database
+  #       if: success()
+  #       run: |
+  #         sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} OWNER ${{ secrets.POSTGRES_USER }};"
+  #         sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD ${{ secrets.POSTGRES_PASSWORD }};"
 
-      - name: Install Dependencies
-        if: success()
-        run: |
-          cd ./database && npm install
-          cd ../server && npm install
+  #     - name: Install Dependencies
+  #       if: success()
+  #       run: |
+  #         cd ./database && npm install
+  #         cd ../server && npm install
 
-      - name: Run Integration Tests
-        if: success()
-        run: |
-          cd ./server && npm run test
+  #     - name: Run Integration Tests
+  #       if: success()
+  #       run: |
+  #         cd ./server && npm run test
       
-      - name: Zip Folder
-        if: success()
-        run: zip -r webapp.zip .
+  #     - name: Zip Folder
+  #       if: success()
+  #       run: zip -r webapp.zip .
 
-      - name: Setting up packer
-        uses: hashicorp/setup-packer@main
+  #     - name: Setting up packer
+  #       uses: hashicorp/setup-packer@main
 
-      - name: Build AMI
-        if: success()
-        run: |
-          cd deployment/ami
-          packer init ./
-          packer build \
-            -var "aws_access_key=${{ secrets.AWS_ACCESS_KEY }}" \
-            -var "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            -var "source_ami=${{ vars.SOURCE_AMI }}" \
-            -var "ami_region=${{ vars.AMI_REGION }}" \
-            -var "zip_file_path=${{ vars.APP_ZIP_PATH }}" \
-            -var "ssh_username=${{ vars.SSH_USERNAME }}" \
-            -var "subnet_id=${{ vars.SUBNET_ID }}" \
-            -var "instanceType=${{ vars.INSTANCE_TYPE }}" \
-            -var "ebsVolumeSize=${{ vars.EBS_VOLUME_SIZE }}" \
-            -var "ebsVolumeType=${{ vars.EBS_VOLUME_TYPE }}" \
-            -var "webappDestinationFolder=${{ vars.WEBAPP_DESTINATION_PATH }}" .
+  #     - name: Build AMI
+  #       if: success()
+  #       run: |
+  #         cd deployment/ami
+  #         packer init ./
+  #         packer build \
+  #           -var "aws_access_key=${{ secrets.AWS_ACCESS_KEY }}" \
+  #           -var "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+  #           -var "source_ami=${{ vars.SOURCE_AMI }}" \
+  #           -var "ami_region=${{ vars.AMI_REGION }}" \
+  #           -var "zip_file_path=${{ vars.APP_ZIP_PATH }}" \
+  #           -var "ssh_username=${{ vars.SSH_USERNAME }}" \
+  #           -var "subnet_id=${{ vars.SUBNET_ID }}" \
+  #           -var "instanceType=${{ vars.INSTANCE_TYPE }}" \
+  #           -var "ebsVolumeSize=${{ vars.EBS_VOLUME_SIZE }}" \
+  #           -var "ebsVolumeType=${{ vars.EBS_VOLUME_TYPE }}" \
+  #           -var "webappDestinationFolder=${{ vars.WEBAPP_DESTINATION_PATH }}" .
 
   update_launch_template_dev:
-    needs: build_ami
+    # needs: build_ami
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY_DEV }}
@@ -205,24 +205,12 @@ jobs:
         done
 
   update_launch_template_demo:
-    needs: build_ami
+    needs: update_launch_template_dev
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY_DEMO }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY_DEMO }}
       AWS_DEFAULT_REGION: 'us-east-1'
-
-    steps:
-    - name: Get Latest AMI ID
-      run: |
-        dev_account_id=${{ vars.DEV_ACCOUNT_ID }}
-        latest_ami=$(aws ec2 describe-images \
-          --executable-users all \
-          --filters "Name=executable-by,Values=$dev_account_id"
-          --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' --output text)
-        echo "Latest AMI ID: $latest_ami from account $dev_account_id"
-        echo "::set-output name=ami_id::$latest_ami"
-      id: ami
       
     - name: Retrieve Existing Launch Template Configuration
       run: |
@@ -242,7 +230,7 @@ jobs:
 
     - name: Replace AMI ID in Launch Template JSON
       run: |
-        jq --arg ami_id "${{ steps.ami.outputs.ami_id }}" \
+        jq --arg ami_id "${{ needs.update_launch_template_dev.outputs.ami_id }}" \
           '.ImageId |= $ami_id' launch_template_data.json > updated_launch_template.json
 
     - name: Print Updated Launch Template JSON
