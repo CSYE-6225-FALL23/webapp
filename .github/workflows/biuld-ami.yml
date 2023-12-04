@@ -85,7 +85,7 @@ jobs:
             -var "ebsVolumeType=${{ vars.EBS_VOLUME_TYPE }}" \
             -var "webappDestinationFolder=${{ vars.WEBAPP_DESTINATION_PATH }}" .
 
-  update_launch_template:
+  update_launch_template_dev:
     needs: build_ami
     runs-on: ubuntu-latest
     env:
@@ -105,7 +105,7 @@ jobs:
       
     - name: Retrieve Existing Launch Template Configuration
       run: |
-        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-lt"
+        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEV_ACCOUNT }}-lt"
         aws ec2 describe-launch-template-versions \
           --launch-template-name $launch_template_name \
           --output json \
@@ -129,7 +129,7 @@ jobs:
 
     - name: Create Launch Template Version
       run: |
-        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-lt"
+        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEV_ACCOUNT }}-lt"
         aws ec2 create-launch-template-version \
           --launch-template-name $launch_template_name \
           --launch-template-data file://updated_launch_template.json
@@ -137,7 +137,7 @@ jobs:
         
     - name: Query Launch Template Versions
       run: |
-        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-lt"
+        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEV_ACCOUNT }}-lt"
         versions=$(aws ec2 describe-launch-template-versions \
           --launch-template-name $launch_template_name \
           --output json \
@@ -149,14 +149,14 @@ jobs:
 
     - name: Set Latest Launch Template Version as Default
       run: |
-        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-lt"
+        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEV_ACCOUNT }}-lt"
         aws ec2 modify-launch-template \
           --launch-template-name $launch_template_name \
           --default-version ${{ steps.template.outputs.latest_version }} \
           --output json
         
-  refresh_autoscaling_group:
-    needs: update_launch_template
+  refresh_autoscaling_group_dev:
+    needs: update_launch_template_dev
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY_DEV }}
@@ -166,7 +166,7 @@ jobs:
     steps:
     - name: Start Auto Scaling Group Instance Refresh
       run: |
-        asg_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-asg"
+        asg_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEV_ACCOUNT }}-asg"
         instance_refresh_command_output=$(aws autoscaling start-instance-refresh \
           --auto-scaling-group-name $asg_name \
           --preferences MinHealthyPercentage=100 \
@@ -180,7 +180,126 @@ jobs:
     - name: Wait for Instance Refresh to Complete
       run: |
         instance_refresh_id="${{ steps.instance_refresh.outputs.instance_refresh_id }}"
-        asg_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-asg"
+        asg_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEV_ACCOUNT }}-asg"
+        
+        # Check the status of the instance refresh in a loop
+        while true; do
+          instance_refresh_status=$(aws autoscaling describe-instance-refreshes \
+            --auto-scaling-group-name $asg_name \
+            --instance-refresh-ids $instance_refresh_id \
+            --query 'InstanceRefreshes[0].Status' \
+            --output json)
+          
+          echo "Instance Refresh Status: $instance_refresh_status"
+          
+          if [ "$instance_refresh_status" == '"Successful"' ]; then
+            echo "Instance Refresh completed successfully."
+            break
+          elif [ "$instance_refresh_status" == '"Cancelled"' ] || [ "$instance_refresh_status" == '"Failed"' ]; then
+            echo "Instance Refresh failed or was cancelled."
+            exit 1
+          else
+            echo "Waiting for Instance Refresh to complete..."
+            sleep 30  # Adjust the sleep interval as needed
+          fi
+        done
+
+  update_launch_template_demo:
+    needs: build_ami
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY_DEMO }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY_DEMO }}
+      AWS_DEFAULT_REGION: 'us-east-1'
+
+    steps:
+    - name: Get Latest AMI ID
+      run: |
+        latest_ami=$(aws ec2 describe-images \
+          --owners self \
+          --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' --output text)
+        echo "Latest AMI ID: $latest_ami"
+        echo "::set-output name=ami_id::$latest_ami"
+      id: ami
+      
+    - name: Retrieve Existing Launch Template Configuration
+      run: |
+        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEMO_ACCOUNT }}-lt"
+        aws ec2 describe-launch-template-versions \
+          --launch-template-name $launch_template_name \
+          --output json \
+          --query "LaunchTemplateVersions[0].LaunchTemplateData" \
+          > launch_template_data.json
+      shell: bash
+        
+    - name: Print Retrieved Launch Template JSON
+      run: cat launch_template_data.json
+
+    - name: Install jq
+      run: sudo apt-get install jq
+
+    - name: Replace AMI ID in Launch Template JSON
+      run: |
+        jq --arg ami_id "${{ steps.ami.outputs.ami_id }}" \
+          '.ImageId |= $ami_id' launch_template_data.json > updated_launch_template.json
+
+    - name: Print Updated Launch Template JSON
+      run: cat updated_launch_template.json
+
+    - name: Create Launch Template Version
+      run: |
+        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEMO_ACCOUNT }}-lt"
+        aws ec2 create-launch-template-version \
+          --launch-template-name $launch_template_name \
+          --launch-template-data file://updated_launch_template.json
+      shell: bash
+        
+    - name: Query Launch Template Versions
+      run: |
+        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEMO_ACCOUNT }}-lt"
+        versions=$(aws ec2 describe-launch-template-versions \
+          --launch-template-name $launch_template_name \
+          --output json \
+          --query "LaunchTemplateVersions[].VersionNumber")
+        latest_version=$(echo $versions | jq -r '.[0]')
+        echo "Latest Launch Template Version: $latest_version"
+        echo "::set-output name=latest_version::$latest_version"
+      id: template
+
+    - name: Set Latest Launch Template Version as Default
+      run: |
+        launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEMO_ACCOUNT }}-lt"
+        aws ec2 modify-launch-template \
+          --launch-template-name $launch_template_name \
+          --default-version ${{ steps.template.outputs.latest_version }} \
+          --output json
+        
+  refresh_autoscaling_group_demo:
+    needs: update_launch_template_demo
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY_DEMO }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY_DEMO }}
+      AWS_DEFAULT_REGION: 'us-east-1'
+
+    steps:
+    - name: Start Auto Scaling Group Instance Refresh
+      run: |
+        asg_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEMO_ACCOUNT }}-asg"
+        instance_refresh_command_output=$(aws autoscaling start-instance-refresh \
+          --auto-scaling-group-name $asg_name \
+          --preferences MinHealthyPercentage=100 \
+          --output json)
+        instance_refresh_id=$(echo $instance_refresh_command_output | jq -r '.InstanceRefreshId')
+        echo "Instance Refresh ID: $instance_refresh_id"
+        echo "::set-output name=instance_refresh_id::$instance_refresh_id"
+      shell: bash
+      id: instance_refresh
+        
+    - name: Wait for Instance Refresh to Complete
+      run: |
+        instance_refresh_id="${{ steps.instance_refresh.outputs.instance_refresh_id }}"
+        asg_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEMO_ACCOUNT }}-asg"
         
         # Check the status of the instance refresh in a loop
         while true; do
