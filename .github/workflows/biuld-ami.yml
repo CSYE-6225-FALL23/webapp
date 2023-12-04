@@ -215,10 +215,12 @@ jobs:
     steps:
     - name: Get Latest AMI ID
       run: |
+        dev_account_id="${{ vars.DEV_ACCOUNT_ID }}"
         latest_ami=$(aws ec2 describe-images \
           --executable-users all \
+          --filters "Name=executable-by,Values=$dev_account_id"
           --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' --output text)
-        echo "Latest AMI ID: $latest_ami"
+        echo "Latest AMI ID: $latest_ami from account $dev_account_id"
         echo "::set-output name=ami_id::$latest_ami"
       id: ami
       
