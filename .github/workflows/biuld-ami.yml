@@ -67,23 +67,23 @@ jobs:
       - name: Setting up packer
         uses: hashicorp/setup-packer@main
 
-      - name: Build AMI
-        if: success()
-        run: |
-          cd deployment/ami
-          packer init ./
-          packer build \
-            -var "aws_access_key=${{ secrets.AWS_ACCESS_KEY }}" \
-            -var "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            -var "source_ami=${{ vars.SOURCE_AMI }}" \
-            -var "ami_region=${{ vars.AMI_REGION }}" \
-            -var "zip_file_path=${{ vars.APP_ZIP_PATH }}" \
-            -var "ssh_username=${{ vars.SSH_USERNAME }}" \
-            -var "subnet_id=${{ vars.SUBNET_ID }}" \
-            -var "instanceType=${{ vars.INSTANCE_TYPE }}" \
-            -var "ebsVolumeSize=${{ vars.EBS_VOLUME_SIZE }}" \
-            -var "ebsVolumeType=${{ vars.EBS_VOLUME_TYPE }}" \
-            -var "webappDestinationFolder=${{ vars.WEBAPP_DESTINATION_PATH }}" .
+      # - name: Build AMI
+      #   if: success()
+      #   run: |
+      #     cd deployment/ami
+      #     packer init ./
+      #     packer build \
+      #       -var "aws_access_key=${{ secrets.AWS_ACCESS_KEY }}" \
+      #       -var "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+      #       -var "source_ami=${{ vars.SOURCE_AMI }}" \
+      #       -var "ami_region=${{ vars.AMI_REGION }}" \
+      #       -var "zip_file_path=${{ vars.APP_ZIP_PATH }}" \
+      #       -var "ssh_username=${{ vars.SSH_USERNAME }}" \
+      #       -var "subnet_id=${{ vars.SUBNET_ID }}" \
+      #       -var "instanceType=${{ vars.INSTANCE_TYPE }}" \
+      #       -var "ebsVolumeSize=${{ vars.EBS_VOLUME_SIZE }}" \
+      #       -var "ebsVolumeType=${{ vars.EBS_VOLUME_TYPE }}" \
+      #       -var "webappDestinationFolder=${{ vars.WEBAPP_DESTINATION_PATH }}" .
 
   update_launch_template_dev:
     needs: build_ami
@@ -101,6 +101,7 @@ jobs:
           --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' --output text)
         echo "Latest AMI ID: $latest_ami"
         echo "::set-output name=ami_id::$latest_ami"
+        echo "AMI_ID=$latest_ami" >> $GITHUB_ENV
       id: ami
       
     - name: Retrieve Existing Launch Template Configuration
@@ -231,7 +232,7 @@ jobs:
 
     - name: Replace AMI ID in Launch Template JSON
       run: |
-        jq --arg ami_id "${{ needs.update_launch_template_dev.outputs.ami_id }}" \
+        jq --arg ami_id "$AMI_ID" \
           '.ImageId |= $ami_id' launch_template_data.json > updated_launch_template.json
 
     - name: Print Updated Launch Template JSON
