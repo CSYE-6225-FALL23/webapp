@@ -67,23 +67,23 @@ jobs:
       - name: Setting up packer
         uses: hashicorp/setup-packer@main
 
-      # - name: Build AMI
-      #   if: success()
-      #   run: |
-      #     cd deployment/ami
-      #     packer init ./
-      #     packer build \
-      #       -var "aws_access_key=${{ secrets.AWS_ACCESS_KEY }}" \
-      #       -var "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-      #       -var "source_ami=${{ vars.SOURCE_AMI }}" \
-      #       -var "ami_region=${{ vars.AMI_REGION }}" \
-      #       -var "zip_file_path=${{ vars.APP_ZIP_PATH }}" \
-      #       -var "ssh_username=${{ vars.SSH_USERNAME }}" \
-      #       -var "subnet_id=${{ vars.SUBNET_ID }}" \
-      #       -var "instanceType=${{ vars.INSTANCE_TYPE }}" \
-      #       -var "ebsVolumeSize=${{ vars.EBS_VOLUME_SIZE }}" \
-      #       -var "ebsVolumeType=${{ vars.EBS_VOLUME_TYPE }}" \
-      #       -var "webappDestinationFolder=${{ vars.WEBAPP_DESTINATION_PATH }}" .
+      - name: Build AMI
+        if: success()
+        run: |
+          cd deployment/ami
+          packer init ./
+          packer build \
+            -var "aws_access_key=${{ secrets.AWS_ACCESS_KEY }}" \
+            -var "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -var "source_ami=${{ vars.SOURCE_AMI }}" \
+            -var "ami_region=${{ vars.AMI_REGION }}" \
+            -var "zip_file_path=${{ vars.APP_ZIP_PATH }}" \
+            -var "ssh_username=${{ vars.SSH_USERNAME }}" \
+            -var "subnet_id=${{ vars.SUBNET_ID }}" \
+            -var "instanceType=${{ vars.INSTANCE_TYPE }}" \
+            -var "ebsVolumeSize=${{ vars.EBS_VOLUME_SIZE }}" \
+            -var "ebsVolumeType=${{ vars.EBS_VOLUME_TYPE }}" \
+            -var "webappDestinationFolder=${{ vars.WEBAPP_DESTINATION_PATH }}" .
 
   update_launch_template_dev:
     needs: build_ami
@@ -212,6 +212,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY_DEMO }}
       AWS_DEFAULT_REGION: 'us-east-1'
       
+    steps:
     - name: Retrieve Existing Launch Template Configuration
       run: |
         launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEMO_ACCOUNT }}-lt"
@@ -261,7 +262,7 @@ jobs:
         launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEMO_ACCOUNT }}-lt"
         aws ec2 modify-launch-template \
           --launch-template-name $launch_template_name \
-          --default-version ${{ steps.template.outputs.latest_version }} \
+          --default-version ${{ needs.update_launch_template_dev.outputs.ami_id }} \
           --output json
         
   refresh_autoscaling_group_demo:
