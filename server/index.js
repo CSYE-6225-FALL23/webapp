@@ -51,7 +51,7 @@ app.use(handleUnsupportedMethods);
 
 // Valid routes
 app.use("/", route);
-app.use("/v1/assignments", assignmentRoute);
+app.use("/v2/assignments", assignmentRoute);
 
 // Handle invalid routes
 app.use("*", (req, res) => {
