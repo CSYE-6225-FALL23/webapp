@@ -215,7 +215,7 @@ jobs:
     steps:
     - name: Get Latest AMI ID
       run: |
-        dev_account_id="${{ vars.DEV_ACCOUNT_ID }}"
+        dev_account_id=${{ vars.DEV_ACCOUNT_ID }}
         latest_ami=$(aws ec2 describe-images \
           --executable-users all \
           --filters "Name=executable-by,Values=$dev_account_id"
