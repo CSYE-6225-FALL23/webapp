@@ -180,7 +180,7 @@ jobs:
     - name: Wait for Instance Refresh to Complete
       run: |
         instance_refresh_id="${{ steps.instance_refresh.outputs.instance_refresh_id }}"
-        asg_name=${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-asg"
+        asg_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_ACCOUNT }}-asg"
         
         # Check the status of the instance refresh in a loop
         while true; do
