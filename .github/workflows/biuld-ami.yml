@@ -214,6 +214,16 @@ jobs:
       AWS_DEFAULT_REGION: 'us-east-1'
       
     steps:
+    - name: Get Latest AMI ID
+      run: |
+        latest_ami=$(aws ec2 describe-images \
+          --owners 253323498692 \
+          --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' \
+          --output text)
+        echo "Latest AMI ID: $latest_ami"
+        echo "::set-output name=ami_id::$latest_ami"
+      id: ami
+
     - name: Retrieve Existing Launch Template Configuration
       run: |
         launch_template_name="${{ vars.WEBAPP_PROJECT_NAME }}-${{ vars.WEBAPP_DEMO_ACCOUNT }}-lt"
@@ -232,7 +242,7 @@ jobs:
 
     - name: Replace AMI ID in Launch Template JSON
       run: |
-        jq --arg ami_id "$AMI_ID" \
+        jq --arg ami_id "${{ steps.ami.outputs.ami_id }}" \
           '.ImageId |= $ami_id' launch_template_data.json > updated_launch_template.json
 
     - name: Print Updated Launch Template JSON
