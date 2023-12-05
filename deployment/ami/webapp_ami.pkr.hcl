@@ -54,7 +54,7 @@ variable "instanceType" {
 
 variable "ami_users" {
   type    = list(string)
-  default = ["273429938290"]
+  default = ["264116642794"]
 }
 
 variable "ami_regions" {
