@@ -217,7 +217,7 @@ jobs:
     - name: Get Latest AMI ID
       run: |
         latest_ami=$(aws ec2 describe-images \
-          --owners 253323498692 \
+          --owners 107619791265 \
           --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' \
           --output text)
         echo "Latest AMI ID: $latest_ami"
